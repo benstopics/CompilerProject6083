@@ -5,12 +5,12 @@ program dan is
 		var := value * value;
 	end procedure;
 	
-	//global procedure teststrproc(string strin in, string strout out)
-	//begin
-	//	putString(strin);
-	//	strout := "teststr2";
-	//	putString(strout);
-	//end procedure;
+	global procedure teststrproc(string strin in, string strout out)
+	begin
+		putString(strin);
+		strout := "teststr2";
+		putString(strout);
+	end procedure;
 	
 	global integer result;
 	global float ftest;

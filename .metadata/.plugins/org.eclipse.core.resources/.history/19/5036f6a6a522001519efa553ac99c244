@@ -60,7 +60,7 @@ public class EmitterAssignmentStatement extends EmitterStatement {
 		} else // Parser failed to prevent compiler error: arrays cannot be assigned
 			getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Parser did not prevent array without a specified index for assignment statement operand.");
 			
-		//if(destination.getTypemark() == TokenTypes.STR) {
+		if(destination.getTypemark() == TokenTypes.STR) {
 			/*int nextStrConstantIdx = getStatementList().getEmitter().nextStringConstantIndex();
 			StringConstant stringConstant = new StringConstant(operandTemp, nextStrConstantIdx);
 			getStatementList().getEmitter().getStringConstants().add(stringConstant);
@@ -78,9 +78,9 @@ public class EmitterAssignmentStatement extends EmitterStatement {
 			addLine(true, tempIdx + " = bitcast " + typeStr + "* " + oldTempIdx + " to " + typeStr + "");
 			addLine(true, "%call" + getStatementList().nextExprTempIndex() + " = call " + typeStr + "* @strcpy(" + typeStr + " " + tempIdx + ", i8* getelementptr inbounds (["
 					+ stringConstant.getCharCount() + " x i8]* @.str" + nextStrConstantIdx + ", i32 0, i32 0))");*/
-		//} else {
+		} else {
 			
 			addLine(true, "store " + typeStr + " " + operandTemp + ", " + typeStr + "* " + targetTemp + ", align 4");
-		//}
+		}
 	}
 }

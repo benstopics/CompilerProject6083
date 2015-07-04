@@ -64,6 +64,7 @@ define i32 @main() {
   %_15arr = alloca [10 x i32], align 4
   %_16strtest = alloca i8*, align 4store i8* getelementptr inbounds ([1 x i8]* @.str_empty, i32 0, i32 0), i8** %_16strtest, align 4
   %0 = getelementptr inbounds [9 x i8]* @.str1, i32 0, i32 0
+  store i8* %0, i8** %_16strtest, align 4
   %1 = load i8** %_16strtest, align 4
   %call0 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* %1)
   %2 = getelementptr inbounds [6 x i8]* @.str2, i32 0, i32 0
