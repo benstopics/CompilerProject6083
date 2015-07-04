@@ -26,6 +26,9 @@ begin
 	putString(strtest);
 	putString("test2");
 	
+	teststrproc("teststr2", strtest);
+	putString(strtest);
+	
 	//getFloat(ftest);
 	//putFloat(ftest);
 

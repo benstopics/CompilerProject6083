@@ -112,10 +112,9 @@ public class EmitterProcedureCall extends EmitterStatement {
 							String idxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
 							addLine(true, idxTemp + " = getelementptr inbounds [" + dest.getArraySize()
 									+ " x " + type + "]* " + destTemp + ", i32 0, i32 " + arrayitemidxstr);
-							callLine += type + "* " + idxTemp + ", ";
-						} else {
-							callLine += type + "* " + destTemp + ", ";
 						}
+						
+						callLine += type + " " + destTemp + ", ";
 					}
 				}
 				callLine = callLine.substring(0, callLine.length()-2) + ")";

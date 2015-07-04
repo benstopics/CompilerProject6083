@@ -114,7 +114,7 @@ public class EmitterProcedureCall extends EmitterStatement {
 									+ " x " + type + "]* " + destTemp + ", i32 0, i32 " + arrayitemidxstr);
 							callLine += type + "* " + idxTemp + ", ";
 						} else {
-							callLine += type + "* " + destTemp + ", ";
+							callLine += type + " " + destTemp + ", ";
 						}
 					}
 				}

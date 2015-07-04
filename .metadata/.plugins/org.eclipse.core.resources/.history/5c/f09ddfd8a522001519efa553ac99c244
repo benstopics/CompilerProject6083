@@ -60,6 +60,27 @@ public class EmitterAssignmentStatement extends EmitterStatement {
 		} else // Parser failed to prevent compiler error: arrays cannot be assigned
 			getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Parser did not prevent array without a specified index for assignment statement operand.");
 			
-		addLine(true, "store " + typeStr + " " + operandTemp + ", " + typeStr + "* " + targetTemp + ", align 4");
+		//if(destination.getTypemark() == TokenTypes.STR) {
+			/*int nextStrConstantIdx = getStatementList().getEmitter().nextStringConstantIndex();
+			StringConstant stringConstant = new StringConstant(operandTemp, nextStrConstantIdx);
+			getStatementList().getEmitter().getStringConstants().add(stringConstant);
+			int callID = getStatementList().nextExprTempIndex();
+			addLine(true, "%call" + callID + " = call " + typeStr + " @malloc(i32 100)");
+			String oldTempIdx = tempIdx;
+			tempIdx = "%" + getStatementList().nextTempIndex();
+			addLine(true, tempIdx + " = bitcast " + typeStr + " %call" + callID + " to " + typeStr + "*");
+			addLine(true, "store " + typeStr + "* " + oldTempIdx + ", " + typeStr + "** " + destTempName + ", align 4");
+			oldTempIdx = tempIdx;
+			tempIdx = "%" + getStatementList().nextTempIndex();
+			addLine(true, tempIdx + " = load " + typeStr + "** " + destTempName + ", align 4");
+			oldTempIdx = tempIdx;
+			tempIdx = "%" + getStatementList().nextTempIndex();
+			addLine(true, tempIdx + " = bitcast " + typeStr + "* " + oldTempIdx + " to " + typeStr + "");
+			addLine(true, "%call" + getStatementList().nextExprTempIndex() + " = call " + typeStr + "* @strcpy(" + typeStr + " " + tempIdx + ", i8* getelementptr inbounds (["
+					+ stringConstant.getCharCount() + " x i8]* @.str" + nextStrConstantIdx + ", i32 0, i32 0))");*/
+		//} else {
+			
+			addLine(true, "store " + typeStr + " " + operandTemp + ", " + typeStr + "* " + targetTemp + ", align 4");
+		//}
 	}
 }
