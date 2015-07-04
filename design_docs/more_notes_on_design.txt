@@ -1,0 +1,3 @@
+List of nonterminals which are presented as optional in parts of the grammar:
+<declaration> and their firstset
+<statement> and their firstset

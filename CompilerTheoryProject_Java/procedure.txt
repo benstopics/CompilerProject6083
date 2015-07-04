@@ -1,0 +1,9 @@
+NOTE: All stages should be tested
+
+Lexer.java - begin token stream
+
+Parser.java - parse tokens into AST while type checking args/params and exprs (AST because I could also convert it to 
+
+SemanticAnalyzer.java - walk AST, manage symbol table, pass nodes to code-gen methods
+
+CodeGenLLVM.java - provide methods for writing LLVM source-code to an output file provided root nodes

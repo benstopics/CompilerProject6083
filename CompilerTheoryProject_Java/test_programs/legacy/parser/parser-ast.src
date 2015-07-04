@@ -1,0 +1,10 @@
+PROGRAM BEN IS
+testdecl;
+testdecl;
+testdecl;
+BEGIN
+teststmt;
+teststmt;
+teststmt;
+// Testing testing testing
+END PROGRAM

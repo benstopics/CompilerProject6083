@@ -1,0 +1,21 @@
+Conversion instructions:
+fptoui -> floating point to unsigned integer
+fptosi -> floating point to signed integer
+uitofp -> unsigned integer to floating point
+sitofp -> signed integer to floating point
+
+etc..
+
+I.e., search "http://llvm.org/docs/LangRef.html#fptoui-to-instruction" with keyword ".. to"
+-----------
+
+function with in arguments copies values to temporary variables
+
+provided_test_programs\correct\test_program.src
+
+Notes EmitterStatementList.java:
+	- Only one output of temporary because the assignment statements beforehand are contained within if statements
+	
+-----------
+
+EmitterStatementList: When Statement is instance of ReturnStatement, returns "br <return_label>".  This implies that anything that calls the EmitterStatementList.emit() method will also at some point emit that said label afterwards with the appropriate exit strategy.

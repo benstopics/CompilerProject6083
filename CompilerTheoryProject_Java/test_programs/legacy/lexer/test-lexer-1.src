@@ -1,0 +1,49 @@
+// Valid numbers
+34985
+89486564
+676
+5.6545
+56.45
+645645.5
+9.
+543.
+
+// Invalid numbers
+5failnum
+.498
+0.9874failnum // Lack of spacing between valid decimal and valid id
+
+testvalidid1234 // Valid id
+6failid // Invalid id with single digit in front
+493875failid // Invalid id with multiple digits in front
+984failid87345 // Invalid id with multiple digits before and after
+
+// Valid ops
+;,+-*/&|()>=<<=>==!=:={}
+
+// Reverse op test
+}{:=!===><=<>=)(|&/*-+,;
+
+// Single ops no spaces (valid)
+;,+-*/()<>{}
+
+// Reversed
+;,+-*/()<>{}
+
+// Invalid ops
+=
+!
+
+// Valid string
+"_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+"1234567890"
+" ,;:.'"
+
+// Invalid string
+"#$%&^%$^&%$"
+"!*)(*&^^&"
+"dkljflkjsdkljf
+lfkjhgoiudf"
+
+// Invalid chars
+—=┘╕YåY_⌡æa»

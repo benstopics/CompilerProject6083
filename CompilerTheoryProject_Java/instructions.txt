@@ -1,0 +1,2 @@
+java -jar target_llvm.jar
+type full or local path of file name and pretty ENTER

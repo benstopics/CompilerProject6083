@@ -1,0 +1,1 @@
+instead of ID, have TokenNode extended class "ExternalTokenNode(title)" where token is new Token(TokenTypes.INTERNAL, titlez)

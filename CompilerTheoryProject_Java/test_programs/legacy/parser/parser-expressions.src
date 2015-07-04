@@ -1,0 +1,26 @@
+program dan is
+
+	global procedure multiply(integer value in, integer var out)
+	begin
+		var := value * value;
+	end procedure;
+	
+	global integer result;
+	global float ftest;
+	global integer i;
+	global integer arr[10];
+begin
+	getFloat(ftest);
+	putFloat(ftest);
+
+	result := 1;
+	for(i := 0; i < 10)
+		multiply(i + 1, arr[i]);
+		putInteger(arr[i]);
+		i := i + 1;
+	end for;
+	for(i := 0; i < 10)
+		putInteger(arr[i]);
+		i := i + 1;
+	end for;
+end program;

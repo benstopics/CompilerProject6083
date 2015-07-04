@@ -1,0 +1,16 @@
+program ben is
+	// global procedure
+	global procedure testProcedure1(float testfloat in, float rtnvalue out) // Test procedure
+	string input;
+	string input2;
+	begin // Begin test procedure
+		getString(testexpr);
+		return;
+		input := testexpr;
+		input2 := testexpr; // unreachable code test
+	end procedure; // End test sub-procedure
+	
+	float result;
+begin
+	testProcedure1(0.42, result);
+end program;

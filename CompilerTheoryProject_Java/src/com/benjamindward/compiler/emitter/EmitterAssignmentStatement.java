@@ -1,0 +1,86 @@
+package com.benjamindward.compiler.emitter;
+
+import java.util.ArrayList;
+
+import com.benjamindward.compiler.errorhandler.ErrorHandler.SyntaxErrorException;
+import com.benjamindward.compiler.lexer.Token;
+import com.benjamindward.compiler.lexer.Token.TokenTypes;
+import com.benjamindward.compiler.semantic.abstractclasses.AssignmentStatement;
+import com.benjamindward.compiler.semantic.abstractclasses.Destination;
+import com.benjamindward.compiler.semantic.abstractclasses.Expression;
+import com.benjamindward.compiler.semantic.abstractclasses.ExpressionNode;
+import com.benjamindward.compiler.semantic.abstractclasses.Factor;
+import com.benjamindward.compiler.semantic.abstractclasses.Parameter;
+import com.benjamindward.compiler.semantic.abstractclasses.Statement;
+
+public class EmitterAssignmentStatement extends EmitterStatement {
+	private AssignmentStatement assignmentStatement;
+
+	public AssignmentStatement getAssignmentStatement() {
+		return assignmentStatement;
+	}
+
+	public void setAssignmentStatement(
+			AssignmentStatement assignmentStatement) {
+		this.assignmentStatement = assignmentStatement;
+	}
+	
+	public EmitterAssignmentStatement(EmitterStatementList statementList, AssignmentStatement assignmentStatement) throws Exception {
+		super(statementList);
+		
+		System.out.println(";assign " + getStatementList().getTempIndex());
+		
+		setAssignmentStatement(assignmentStatement);
+		
+		Destination destination = getAssignmentStatement().getDestination();
+		boolean isParam = getIsParam(destination);
+		String destTempName = "%_" + destination.getMetaKeyID() + destination.getVariableName();
+		String typeStr = Emitter.typeToLLVMDataType(false, destination.getEvaluatedType());
+		
+		Temporary operand = getExprTempString(getAssignmentStatement().getOperand());
+		String operandTemp = operand.getName();
+		
+		String targetTemp = destTempName;
+		
+		System.out.println(destTempName + " " + isParam);
+		
+		if(destination.ptrToArrayItem() && !isParam) {
+			String arrayIdxTemp = getExprTempString(destination.getArrayIndexExpression()).getName();
+			String itemPtrTemp = loadTempArrayItemPtr(destination, arrayIdxTemp);
+			
+			targetTemp = itemPtrTemp;
+		} else if(!destination.isArray()) { // Must be single variable
+			if(isParam) {
+				String tempIdx = "%" + getStatementList().nextTempIndex();
+				addLine(true, tempIdx + " = load " + typeStr + (isParam ? "*" : "") + "* " + destTempName + ", align 4");
+				targetTemp = tempIdx;
+			}
+			
+			System.out.println(";assign " + getStatementList().getTempIndex());
+		} else // Parser failed to prevent compiler error: arrays cannot be assigned
+			getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Parser did not prevent array without a specified index for assignment statement operand.");
+			
+		if(destination.getTypemark() == TokenTypes.STR) {
+			/*int nextStrConstantIdx = getStatementList().getEmitter().nextStringConstantIndex();
+			StringConstant stringConstant = new StringConstant(operandTemp, nextStrConstantIdx);
+			getStatementList().getEmitter().getStringConstants().add(stringConstant);
+			int callID = getStatementList().nextExprTempIndex();
+			addLine(true, "%call" + callID + " = call " + typeStr + " @malloc(i32 100)");
+			String oldTempIdx = tempIdx;
+			tempIdx = "%" + getStatementList().nextTempIndex();
+			addLine(true, tempIdx + " = bitcast " + typeStr + " %call" + callID + " to " + typeStr + "*");
+			addLine(true, "store " + typeStr + "* " + oldTempIdx + ", " + typeStr + "** " + destTempName + ", align 4");
+			oldTempIdx = tempIdx;
+			tempIdx = "%" + getStatementList().nextTempIndex();
+			addLine(true, tempIdx + " = load " + typeStr + "** " + destTempName + ", align 4");
+			oldTempIdx = tempIdx;
+			tempIdx = "%" + getStatementList().nextTempIndex();
+			addLine(true, tempIdx + " = bitcast " + typeStr + "* " + oldTempIdx + " to " + typeStr + "");
+			addLine(true, "%call" + getStatementList().nextExprTempIndex() + " = call " + typeStr + "* @strcpy(" + typeStr + " " + tempIdx + ", i8* getelementptr inbounds (["
+					+ stringConstant.getCharCount() + " x i8]* @.str" + nextStrConstantIdx + ", i32 0, i32 0))");*/
+		} else {
+			
+			addLine(true, "store " + typeStr + " " + operandTemp + ", " + typeStr + "* " + targetTemp + ", align 4");
+		}
+	}
+}

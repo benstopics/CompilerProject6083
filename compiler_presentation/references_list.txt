@@ -1,0 +1,4 @@
+References:
+LR(0) examples and concepts - https://www.youtube.com/watch?v=fG1duL7tg3s
+LALR examples and concepts - https://www.youtube.com/watch?v=VSkfnRfNuwI
+LALR, example of merging LR(1) states, difference between SLR(1) and LALR, idea of reducing number of states of LR(1) to same as SLR(1) while retaining some of the power of LR(1) - http://dragonbook.stanford.edu/lecture-notes/Stanford-CS143/11-LALR-Parsing.pdf

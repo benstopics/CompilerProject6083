@@ -1,0 +1,17 @@
+program ben is
+	global procedure testProcedure1(float testfloat in, float rtnvalue out) // Test procedure
+		procedure testProcedure3(float testfloat in, float rtnvalue out) // Test procedure
+		begin // Begin test procedure
+		end procedure; // End test sub-procedure
+	
+		global procedure testProcedure3(float testfloat in, float rtnvalue out) // Test procedure
+		begin // Begin test procedure
+		end procedure; // End test sub-procedure
+	begin // Begin test procedure
+	end procedure; // End test sub-procedure
+	
+	global procedure testProcedure2(integer input in, float testfloat in, float rtnvalue out) // Test procedure
+	begin // Begin test procedure
+	end procedure; // End test sub-procedure
+begin // Begin program
+end program

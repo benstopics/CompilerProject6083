@@ -1,0 +1,35 @@
+program ben is
+
+	integer intTest[10];
+	string strTest;
+
+	// First procedure
+	global procedure testProcedure1 (float floatTest in, bool result out)
+		procedure testSubProcedure1 () // Test sub-procedure
+		begin // Begin test procedure
+			teststmt;
+		end procedure; // End test sub-procedure
+		
+		procedure testSubProcedure2 () // Test sub-procedure
+		begin // Begin test procedure
+			teststmt;
+			teststmt;
+		end procedure; // End test sub-procedure
+	begin // Begin test procedure
+		teststmt;
+		teststmt;
+		teststmt;
+	end procedure; // End test procedure
+	
+	// Second procedure
+	procedure testProcedure2 ()
+	begin // Begin test procedure
+		teststmt;
+		teststmt;
+		teststmt;
+	end procedure; // End test procedure
+begin // Begin program
+	teststmt;
+	teststmt;
+	teststmt;
+end program

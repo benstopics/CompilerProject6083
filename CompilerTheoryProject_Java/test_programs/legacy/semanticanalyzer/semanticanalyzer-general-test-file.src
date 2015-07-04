@@ -1,0 +1,59 @@
+program ben is
+	// global procedure
+	global procedure testProcedure1(float testfloat in, float rtnvalue out) // Test procedure
+	global string input;
+	global string input2;
+	
+	global procedure testProcedure1(float testfloat in, float rtnvalue out) // Test procedure
+	begin // Begin test procedure
+	end procedure; // End test sub-procedure
+	
+	global procedure testProcedure2(float testfloat in, float rtnvalue out) // Test procedure
+	begin // Begin test procedure
+	end procedure; // End test sub-procedure
+	
+	global procedure testProcedure2(float testfloat in, float rtnvalue out) // Test procedure
+	begin // Begin test procedure
+	end procedure; // End test sub-procedure
+	
+	global procedure testProcedure1(float testfloat in, float rtnvalue out) // Test procedure
+	begin // Begin test procedure
+		getString();
+		return;
+		input := "test1";
+		input2 := "test2"; // unreachable code test
+	end procedure; // End test sub-procedure
+	
+	global bool testid[10];
+	global string teststr;
+	global float result;
+	global integer i;
+begin // Begin program
+	// If statement
+	if (testexpr) then
+		if (testexpr) then
+			testid[testexpr] := testexpr;
+		end if;
+		testid[testexpr] := testexpr;
+		if (testexpr) then
+			testid[testexpr] := testexpr;
+		end if;
+	else
+		testid[testexpr] := testexpr;
+		if (testexpr) then
+			testid[testexpr] := testexpr;
+		 end if;
+		testid[testexpr] := testexpr;
+		if (testexpr) then
+			testid[testexpr] := testexpr;
+		end if;
+	end if;
+	// Assignment statement
+	teststr := testexpr; // Would be a string constant
+	// Procedure call
+	testProcedure1(testexpr, testexpr);
+	// Loop statement
+	for (i := testexpr; testexpr) // Assignment inside loop statement
+		putInteger(testexpr);
+	end for;
+end program

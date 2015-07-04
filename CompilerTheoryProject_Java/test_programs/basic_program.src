@@ -1,0 +1,23 @@
+program ben is
+	global string test1;
+	global integer test2;
+	global float fMyArray[10];
+	
+	global procedure test1 ()
+		integer i;
+		procedure subtest1 ()
+			integer i;
+		begin
+			i := 1;
+		end procedure;
+		
+		procedure subtest2 ()
+		float i;
+		begin
+			i := 1;
+		end procedure;
+	begin end procedure;
+begin
+	//test2 := test2 + 5;
+	fMyArray[fMyArray[5.5 *11] + test2 * fMyArray[5]] := 15;
+end program;

@@ -1,0 +1,15 @@
+statement while loops won't work
+optional parsing methods won't work with boolean, or will they?
+methods will have to return true / false?
+no, won't work, instead return token.
+If token type is null, first token not found.
+If token type is production_parsed, a production was parsed successfully
+If token type is error, first token found began but production was not parsed
+
+TODO: change parse_token_by_str and parse_token_by_type to reflect these standards
+TODO: replace all instances of "!= Token.Types.error" with "!= Token.Types.null" where applicable
+
+boolean return does not work in general with all parsing methods
+
+TODO: change all parsing methods to reflect these standards
+TODO: replace all boolean conditions with token type equality conditions for all parsing methods

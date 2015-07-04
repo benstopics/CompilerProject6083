@@ -1,0 +1,133 @@
+# If just string, definite terminal.  If list, definite non-terminal.
+# Method of Parser.NonTerminal should be parse(), which returns a Node object with token string "null", "error", or the name of a nonterminal.
+# A Node object has a root-node and a list of child nodes if any.
+
+# Note the second parameter of the Parser.NonTerminal constructor.
+# You can see that we are selecting what nodes we want returned from parse()
+
+DRAFT #1:
+if_statement = Parser.NonTerminal(15,['if','(',expression,')','then', \ # 0, 1, 2, 3, 4 | nonterminal-ID = 15
+	Parser.MissingError(statement_list, \ 'If statement body must contain at least one statement (assignment, if, for loop, return, procedure call).'), \ # 5
+	Parser.Optional(['else', \ # 6
+		Parser.MissingError(statement_list, 'Else must be followed by at least one statement (assignment, if, for loop, return, procedure call).')), \ # 7
+	'end','if'],[2,5,[6,7]]) # 8,9
+	
+DRAFT #2:
+# parse_tokens() polymorphism for parse_tokens(str) and parse_tokens(str_list)
+node_ifthen = Parser.parse_tokens([
+
+def parse()
+	node = null
+	for self.child_nodes
+		if terminal,
+			attempt match token. if select node index, add token as node.
+		elif nonterminal,
+			if missingerror,
+				node = parse
+			elif optional,
+		
+		
+	
+# Note on the last line: 
+
+result_node = Parser.if_statement.parse()
+if result_node.accepted(): # not missing or error
+	self.code_gen(result_node)
+
+# Extra ideas
+#	type check method to return whether all applicable nodes in a parsetree are compatible types
+
+# Note about learning
+#	My learning is like neural network.  Local minimum and maximum, but I have to try every possibility.  In the end, it balances out.
+#	Therefore, I should try things and make designs with the intuition that they will work, but not worry about if they actually will.
+#	Manifest the images, see if they work in reality.  Will still help because it will create more connections, loose associations.
+
+How to parse, semantic analyze, and code gen at the same time?
+
+Speed
+Simplicity
+
+What don't I like about the current code? / Possible Solution
+*Not modular / ?
+*Changes are time consuming / Proposed BNF-like design
+	*Does not type check / ?
+	
+- Parse Expression method that handles <expression>, <arithOp>, <relation>, <term>, and <factor> parsing and:
+	- Returns parse tree, OR...
+	- Generates code simultaneously.
+	
+	How to decide?  Problem: LLVM '%# =' counting
+	No need to declare variable because LLVM is cool like that...
+	Must only keep track of previous %# in that scope...
+	
+- Keeping track of scope in symbol table or parse tree
+
+- The problem is the more problems I discover, the more that has to be changed.
+- The more that has to be changed and the less modular my system is, the more time I consume just
+	making changes to reflect my design improvements.
+	
+Imagine that I am multiple people working on the same project.
+
+Combine "parse_token_by_str" and "parse_token_by_type" using type checking to "parse_token"
+
+The main problem is parsing expressions, statements, and what they should return if anything.
+
+The real question is: what information do we need going into the expression and statement parsing
+methods to generate LLVM code and what valuable information needs to come out?
+
+Need to write it in a way that best fits the spec, but is also modular for all parts which can be modular.
+
+Forget if/else, just call parse_token() function and if error, end program abruptly.
+For optional tokens, parse_optional_token() which will check if it's even there first.
+All expression needs to know is the expected datatype.
+	- Needs to call typecasting method
+	- For boolean typecasting, return -1 if error and return main if -1
+All statement needs to know is... NOTHING!
+	- Scope handled by semantics
+	- Last temporary variable increment is remembered by semantics
+	
+Expression datatype conversion map:
+- `&`, `|`, `not`: integer and integer, boolean and boolean
+- `+`, `-`, `*`, `/`: (float|integer) and (float|integer), 
+- relational operators (return 
+
+NOTE: Semantics must make sure to use tabs when necessary.
+
+NOTE: Parse Tree nodes must know what line each token was on.  Add line_number attribute to token class?
+
+If problem is whether statement should return a token or a parse tree node.
+I think it should return Token.Parsed or Token.Null because either it doesn't matter or parse_statement() simply needs to know whether it was parsed or missing.
+
+def parse_if_statement(self):
+	if self.lookahead_match_str('if'):
+		node_if_expr_cond = ([self.parse_token('if'),self.parse_token('('),self.parse_expression(),self.parse_token(')'),self.parse_token('then')])[2]
+		MissingError(self.parse_statement_list(),'If statement body must contain at least one statement (assignment, if, for loop, return, procedure call).')
+		if self.parse_optional_keyword_token('else'):
+			MissingError(self.parse_statement_list(),'If statement body must contain at least one statement (assignment, if, for loop, return, procedure call).')
+		node_endif = ([self.parse_token('end'),self.parse_token('if')])
+		# --> Codegen for if statement
+		return True
+	else:
+		return False
+		
+		
+Problem: Do we jump to temporaries or make up our own labels?
+Solution: Use own labels, ex. "LoopLabel12" etc.  Optimization can make it faster and cleaner.
+
+When BR instruction is called, increments temporary variables and creates label of that increment at line position.
+
+IF I VISUALIZE IT (ex. how the computer abstractly parses expression and generates LLVM code), THEN IT BECOMES REALITY.
+
+What is my target datatype?
+
+Bitwise operators cannot be used with floats, therefore they cannot be used to merge floats with integers to return integers.
+(Float + Integer) = Float, while (Integer + Float) = Integer
+Relation operators return boolean result.  Booleans cannot be casted to integer implicitly.
+	- Therefore, if type is Float or Integer and relational operator found, error is thrown.
+For expression, if factor not found after operator, error is, 'Expected operand after '<operator>' operator.'
+
+Problem: must maintain precedence.  How to handle operands?
+Solution: Parse operator, parse lower precedence, return operator and temporary variable. Leave it to caller to do the rest.
+Don't worry about whether condition or not.  Boolean will know if expecting conditional temporary variable.
+
+For scope, handled by semantic analyzer, increment when new scope entered, decrement when scope exited.
