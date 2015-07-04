@@ -8,11 +8,9 @@ target triple = "i686-pc-windows-gnu"
 @_imp___iob = external global [0 x %struct._iobuf]*
 @.str1 = private unnamed_addr constant [21 x i8] c"%[a-zA-Z0-9 _,;:.']\0A\00", align 1
 @.str2 = private unnamed_addr constant [4 x i8] c"%s\0A\00", align 1
-@.str3 = private unnamed_addr constant [5 x i8] c"true\00", align 1
-@.str4 = private unnamed_addr constant [6 x i8] c"false\00", align 1
-@.str5 = private unnamed_addr constant [14 x i8] c"Enter float: \00", align 1
-@.str6 = private unnamed_addr constant [3 x i8] c"%f\00", align 1
-@.str7 = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
+@.str3 = private unnamed_addr constant [6 x i8] c"test2\00", align 1
+@.str4 = private unnamed_addr constant [6 x i8] c"test1\00", align 1
+@.str5 = private unnamed_addr constant [9 x i8] c"testtest\00", align 1
 
 ; Function Attrs: nounwind
 define void @check_int_to_bool(i32 %test) #0 {
@@ -91,28 +89,20 @@ declare i8* @fgets(i8*, i32, %struct._iobuf*) #1
 define i32 @main() #0 {
 entry:
   %retval = alloca i32, align 4
-  %true = alloca i8*, align 4
-  %false = alloca i8*, align 4
-  %iarr = alloca [10 x i32], align 4
-  %fvar = alloca float, align 4
+  %ftest = alloca float, align 4
+  %teststr2 = alloca i8*, align 4
+  %teststr3 = alloca i8*, align 4
   store i32 0, i32* %retval
-  store i8* getelementptr inbounds ([5 x i8]* @.str3, i32 0, i32 0), i8** %true, align 4
-  store i8* getelementptr inbounds ([6 x i8]* @.str4, i32 0, i32 0), i8** %false, align 4
-  %0 = load i8** %true, align 4
+  store float 0x4016666660000000, float* %ftest, align 4
+  store i8* getelementptr inbounds ([6 x i8]* @.str3, i32 0, i32 0), i8** %teststr2, align 4
+  store i8* getelementptr inbounds ([6 x i8]* @.str4, i32 0, i32 0), i8** %teststr3, align 4
+  %0 = load i8** %teststr2, align 4
   %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* %0)
-  %1 = load i8** %false, align 4
-  %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* %1)
-  %arrayidx = getelementptr inbounds [10 x i32]* %iarr, i32 0, i32 1
-  call void @testfunc(i32 5, i32* %arrayidx)
-  %call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str5, i32 0, i32 0))
-  %call3 = call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([3 x i8]* @.str6, i32 0, i32 0), float* %fvar)
-  %2 = load float* %fvar, align 4
-  %conv = fpext float %2 to double
-  %call4 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str7, i32 0, i32 0), double %conv)
+  %1 = load i8** %teststr3, align 4
+  store i8* %1, i8** %teststr2, align 4
+  %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8]* @.str5, i32 0, i32 0))
   ret i32 0
 }
-
-declare i32 @scanf(i8*, ...) #1
 
 attributes #0 = { nounwind "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "unsafe-fp-math"="false" "use-soft-float"="false" }

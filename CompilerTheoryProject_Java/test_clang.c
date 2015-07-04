@@ -110,7 +110,15 @@ int main () {
 	svars[1] = newstr;
 	printf("%s\n", svars[1]);*/
 	
-	char *true = "true";
+	float ftest = 5.6;
+	
+	char *teststr2 = "test2";
+	char *teststr3 = "test1";
+	printf("%s\n", teststr2);
+	teststr2 = teststr3;
+	printf("%s\n", "testtest");
+	
+	/*char *true = "true";
 	char *false = "false";
 	printf("%s\n", true);
 	printf("%s\n", false);
@@ -122,7 +130,7 @@ int main () {
 	printf("Enter float: ");
 		scanf("%f", &fvar);
 	
-	printf("%f\n", fvar);
+	printf("%f\n", fvar);*/
 	
 	/*intc = inta + intb;
 	intc = inta - intb;

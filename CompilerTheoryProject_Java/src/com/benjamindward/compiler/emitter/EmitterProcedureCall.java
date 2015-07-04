@@ -2,8 +2,10 @@ package com.benjamindward.compiler.emitter;
 
 import java.util.ArrayList;
 
+import com.benjamindward.compiler.errorhandler.ErrorHandler.SyntaxErrorException;
 import com.benjamindward.compiler.semantic.abstractclasses.Destination;
 import com.benjamindward.compiler.semantic.abstractclasses.ExpressionNode;
+import com.benjamindward.compiler.semantic.abstractclasses.Factor;
 import com.benjamindward.compiler.semantic.abstractclasses.Parameter;
 import com.benjamindward.compiler.semantic.abstractclasses.ProcedureCall;
 
@@ -65,6 +67,27 @@ public class EmitterProcedureCall extends EmitterStatement {
 			addLine(true, "%call" + getStatementList().nextExprTempIndex() +
 					" = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putfloat, i32 0, i32 0), double " + convTemp + ")");
 		} else if(procedureCall.getProcedureName().equals("putstring")) {
+			ExpressionNode arg = procedureCall.getArguments().get(0);
+			Destination dest = null;
+			Factor factor = null;
+			if(arg instanceof Destination)
+				dest = (Destination) arg;
+			else if(arg instanceof Factor)
+				factor = (Factor) arg;
+			
+			String valueTemp;
+			if(dest != null) {
+				if(dest.isArray()) {
+					String exprTemp = getExprTempString(dest.getArrayIndexExpression()).getName();
+					valueTemp = loadTempArrayItemPtr(dest, exprTemp);
+				} else {
+					valueTemp = loadTempValueAtPtr("%" + dest.getMetaKeyID() + dest.getVariableName(), dest);
+				}
+			} else if(factor != null) {
+				valueTemp = getExprTempString(factor).getName();
+			} else
+				throw new SyntaxErrorException("Compiler error: putString() argument neither instance of destination nor factor");
+			
 			
 		} else {
 			// User-defined procedure
