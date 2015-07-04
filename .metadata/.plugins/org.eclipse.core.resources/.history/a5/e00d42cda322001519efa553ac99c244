@@ -90,7 +90,7 @@ public class Emitter extends CompilerComponent {
 		
 		int runtimeErrorTempIdx = nextStringConstantIndex();
 		mainLines.add("@.str" + runtimeErrorTempIdx + " = private unnamed_addr constant [63 x i8] c\"Runtime error -> Attempted to convert integer '%d' to boolean.\\00\", align 1");
-		mainLines.add("@.str_empty = private unnamed_addr constant [1 x i8] c\"\\00\", align 1");
+		mainLines.add("@.str_empty = private unnamed_addr constant [3 x i8] c\"%d\\00\", align 1");
 		mainLines.add("@.str_getbool = private unnamed_addr constant [3 x i8] c\"%i\\00\", align 1");
 		mainLines.add("@.str_getint = private unnamed_addr constant [3 x i8] c\"%i\\00\", align 1");
 		mainLines.add("@.str_getfloat = private unnamed_addr constant [3 x i8] c\"%f\\00\", align 1");

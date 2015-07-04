@@ -81,7 +81,7 @@ public class EmitterProcedureCall extends EmitterStatement {
 					String exprTemp = getExprTempString(dest.getArrayIndexExpression()).getName();
 					valueTemp = loadTempArrayItemPtr(dest, exprTemp);
 				} else {
-					valueTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
+					valueTemp = loadTempValueAtPtr("%" + dest.getMetaKeyID() + dest.getVariableName(), dest);
 				}
 			} else if(factor != null) {
 				valueTemp = getExprTempString(factor).getName();

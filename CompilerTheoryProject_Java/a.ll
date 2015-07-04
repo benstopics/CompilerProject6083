@@ -22,7 +22,7 @@ return.stmt:
 }
 
 @.str0 = private unnamed_addr constant [63 x i8] c"Runtime error -> Attempted to convert integer '%d' to boolean.\00", align 1
-@.str_empty = private unnamed_addr constant [3 x i8] c"%d\00", align 1
+@.str_empty = private unnamed_addr constant [1 x i8] c"\00", align 1
 @.str_getbool = private unnamed_addr constant [3 x i8] c"%i\00", align 1
 @.str_getint = private unnamed_addr constant [3 x i8] c"%i\00", align 1
 @.str_getfloat = private unnamed_addr constant [3 x i8] c"%f\00", align 1
@@ -62,99 +62,100 @@ define i32 @main() {
   %_13ftest = alloca float, align 4
   %_14i = alloca i32, align 4
   %_15arr = alloca [10 x i32], align 4
-  %call0 = call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([3 x i8]* @.str_getfloat, i32 0, i32 0), float* %_13ftest)
-  ;instance of Destination and not array item ptr, idxTemp: 0
-  %0 = load float* %_13ftest, align 4
-  %1 = fpext float %0 to double
-  %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putfloat, i32 0, i32 0), double %1)
+  %_16strtest = alloca i8*, align 4store i8* getelementptr inbounds ([1 x i8]* @.str_empty, i32 0, i32 0), i8** %_16strtest, align 4
+  %0 = getelementptr inbounds [9 x i8]* @.str1, i32 0, i32 0
+  %1 = load i8** %_16strtest, align 4
+  %call0 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* %1)
+  %2 = getelementptr inbounds [6 x i8]* @.str2, i32 0, i32 0
+  %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* %2)
   %const2 = alloca i32, align 4
   store i32 1, i32* %const2, align 4
-  %2 = load i32* %const2
-  store i32 %2, i32* %_12result, align 4
+  %3 = load i32* %const2
+  store i32 %3, i32* %_12result, align 4
   %const3 = alloca i32, align 4
   store i32 0, i32* %const3, align 4
-  %3 = load i32* %const3
-  store i32 %3, i32* %_14i, align 4
+  %4 = load i32* %const3
+  store i32 %4, i32* %_14i, align 4
   br label %while.cond4
   
 while.cond4:
-  ;instance of Destination and not array item ptr, idxTemp: 4
-  %4 = load i32* %_14i, align 4
+  ;instance of Destination and not array item ptr, idxTemp: 5
+  %5 = load i32* %_14i, align 4
   %const5 = alloca i32, align 4
   store i32 10, i32* %const5, align 4
-  %5 = load i32* %const5
-  %lt6 = icmp slt i32 %4, %5
-  ;calculate result 6
+  %6 = load i32* %const5
+  %lt6 = icmp slt i32 %5, %6
+  ;calculate result 7
   br i1 %lt6, label %while.body4, label %while.end4
   
 while.body4:
-  ;instance of Destination and not array item ptr, idxTemp: 6
-  %6 = load i32* %_14i, align 4
+  ;instance of Destination and not array item ptr, idxTemp: 7
+  %7 = load i32* %_14i, align 4
   %const7 = alloca i32, align 4
   store i32 1, i32* %const7, align 4
-  %7 = load i32* %const7
-  %add8 = add nsw i32 %6, %7
-  ;calculate result 8
-  ;calculate int 8
-  ;instance of Destination and not array item ptr, idxTemp: 8
-  %8 = load i32* %_14i, align 4
-  %arrayidx9 = getelementptr inbounds [10 x i32]* %_15arr, i32 0, i32 %8
-  call void @_11multiply(i32 %add8, i32* %arrayidx9)
+  %8 = load i32* %const7
+  %add8 = add nsw i32 %7, %8
+  ;calculate result 9
+  ;calculate int 9
   ;instance of Destination and not array item ptr, idxTemp: 9
   %9 = load i32* %_14i, align 4
-  %arrayidx10 = getelementptr inbounds [10 x i32]* %_15arr, i32 0, i32 %9
-  %10 = load i32* %arrayidx10, align 4
-  %call11 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putint, i32 0, i32 0), i32 %10)
-  ;instance of Destination and not array item ptr, idxTemp: 11
-  %11 = load i32* %_14i, align 4
+  %arrayidx9 = getelementptr inbounds [10 x i32]* %_15arr, i32 0, i32 %9
+  call void @_11multiply(i32 %add8, i32* %arrayidx9)
+  ;instance of Destination and not array item ptr, idxTemp: 10
+  %10 = load i32* %_14i, align 4
+  %arrayidx10 = getelementptr inbounds [10 x i32]* %_15arr, i32 0, i32 %10
+  %11 = load i32* %arrayidx10, align 4
+  %call11 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putint, i32 0, i32 0), i32 %11)
+  ;instance of Destination and not array item ptr, idxTemp: 12
+  %12 = load i32* %_14i, align 4
   %const12 = alloca i32, align 4
   store i32 1, i32* %const12, align 4
-  %12 = load i32* %const12
-  %add13 = add nsw i32 %11, %12
-  ;calculate result 13
-  ;calculate int 13
+  %13 = load i32* %const12
+  %add13 = add nsw i32 %12, %13
+  ;calculate result 14
+  ;calculate int 14
   store i32 %add13, i32* %_14i, align 4
 
   br label %while.cond4
   
 while.end4:
-  ;13
+  ;14
   %const14 = alloca i32, align 4
   store i32 0, i32* %const14, align 4
-  %13 = load i32* %const14
-  store i32 %13, i32* %_14i, align 4
+  %14 = load i32* %const14
+  store i32 %14, i32* %_14i, align 4
   br label %while.cond15
   
 while.cond15:
-  ;instance of Destination and not array item ptr, idxTemp: 14
-  %14 = load i32* %_14i, align 4
+  ;instance of Destination and not array item ptr, idxTemp: 15
+  %15 = load i32* %_14i, align 4
   %const16 = alloca i32, align 4
   store i32 10, i32* %const16, align 4
-  %15 = load i32* %const16
-  %lt17 = icmp slt i32 %14, %15
-  ;calculate result 16
+  %16 = load i32* %const16
+  %lt17 = icmp slt i32 %15, %16
+  ;calculate result 17
   br i1 %lt17, label %while.body15, label %while.end15
   
 while.body15:
-  ;instance of Destination and not array item ptr, idxTemp: 16
-  %16 = load i32* %_14i, align 4
-  %arrayidx18 = getelementptr inbounds [10 x i32]* %_15arr, i32 0, i32 %16
-  %17 = load i32* %arrayidx18, align 4
-  %call19 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putint, i32 0, i32 0), i32 %17)
-  ;instance of Destination and not array item ptr, idxTemp: 18
-  %18 = load i32* %_14i, align 4
+  ;instance of Destination and not array item ptr, idxTemp: 17
+  %17 = load i32* %_14i, align 4
+  %arrayidx18 = getelementptr inbounds [10 x i32]* %_15arr, i32 0, i32 %17
+  %18 = load i32* %arrayidx18, align 4
+  %call19 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putint, i32 0, i32 0), i32 %18)
+  ;instance of Destination and not array item ptr, idxTemp: 19
+  %19 = load i32* %_14i, align 4
   %const20 = alloca i32, align 4
   store i32 1, i32* %const20, align 4
-  %19 = load i32* %const20
-  %add21 = add nsw i32 %18, %19
-  ;calculate result 20
-  ;calculate int 20
+  %20 = load i32* %const20
+  %add21 = add nsw i32 %19, %20
+  ;calculate result 21
+  ;calculate int 21
   store i32 %add21, i32* %_14i, align 4
 
   br label %while.cond15
   
 while.end15:
-  ;20
+  ;21
 
   ret i32 0
 }
@@ -176,3 +177,5 @@ declare i8* @fgets(i8*, i32, %struct._iobuf*)
 declare i32 @printf(i8*, ...)
 
 declare void @exit(i32)
+@.str1 = private unnamed_addr constant [9 x i8] c"teststr1\00", align 1
+@.str2 = private unnamed_addr constant [6 x i8] c"test2\00", align 1

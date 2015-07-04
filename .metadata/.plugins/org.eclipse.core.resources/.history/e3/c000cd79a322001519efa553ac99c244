@@ -81,15 +81,14 @@ public class EmitterProcedureCall extends EmitterStatement {
 					String exprTemp = getExprTempString(dest.getArrayIndexExpression()).getName();
 					valueTemp = loadTempArrayItemPtr(dest, exprTemp);
 				} else {
-					valueTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
+					valueTemp = loadTempValueAtPtr("%" + dest.getMetaKeyID() + dest.getVariableName(), dest);
 				}
 			} else if(factor != null) {
 				valueTemp = getExprTempString(factor).getName();
 			} else
 				throw new SyntaxErrorException("Compiler error: putString() argument neither instance of destination nor factor");
 			
-			addLine(true, "%call" + getStatementList().nextExprTempIndex()
-					+ " = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* "
+			addLine(true, "%call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* "
 					+ valueTemp + ")");
 		} else {
 			// User-defined procedure

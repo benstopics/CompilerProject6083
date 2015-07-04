@@ -5,13 +5,29 @@ program dan is
 		var := value * value;
 	end procedure;
 	
+	//global procedure teststrproc(string strin in, string strout out)
+	//begin
+	//	putString(strin);
+	//	strout := "teststr2";
+	//	putString(strout);
+	//end procedure;
+	
 	global integer result;
 	global float ftest;
 	global integer i;
 	global integer arr[10];
+	
+	global string strtest;
 begin
-	getFloat(ftest);
-	putFloat(ftest);
+	//teststrproc("hello", strtest);
+	//putString(strtest);
+
+	strtest := "teststr1";
+	putString(strtest);
+	putString("test2");
+	
+	//getFloat(ftest);
+	//putFloat(ftest);
 
 	result := 1;
 	for(i := 0; i < 10)
