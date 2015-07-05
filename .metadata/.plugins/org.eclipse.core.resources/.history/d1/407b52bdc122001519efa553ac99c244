@@ -154,11 +154,11 @@ public class Emitter extends CompilerComponent {
 		mainLines.add(tab + "br i1 %cmp, label %print.true, label %print.false");
 		mainLines.add("");
 		mainLines.add("print.true:");
-		mainLines.add(tab + "%call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str_booltrue, i32 0, i32 0))");
+		mainLines.add(tab + "%call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.str_booltrue, i32 0, i32 0))");
 		mainLines.add(tab + "br label %if.end");
 		mainLines.add("");
 		mainLines.add("print.false:");
-		mainLines.add(tab + "%call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str_boolfalse, i32 0, i32 0))");
+		mainLines.add(tab + "%call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str_boolfalse, i32 0, i32 0))");
 		mainLines.add(tab + "br label %if.end");
 		mainLines.add("");
 		mainLines.add("if.end:");

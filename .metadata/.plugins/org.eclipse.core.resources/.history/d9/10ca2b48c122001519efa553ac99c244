@@ -95,9 +95,7 @@ public class EmitterProcedureCall extends EmitterStatement {
 						+ ", i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* " + destPtrTemp + ")");
 			}
 		} else if(procedureCall.getProcedureName().equals("putbool")) {
-			ExpressionNode valueExprNode = procedureCall.getArguments().get(0);
-			String exprTemp = getExprTempString(valueExprNode).getName();
-			addLine(true, "call void @putbool(i1 " + exprTemp + ")");
+			
 		} else if(procedureCall.getProcedureName().equals("putinteger")) {
 			ExpressionNode valueExprNode = procedureCall.getArguments().get(0);
 			String exprTemp = getExprTempString(valueExprNode).getName();

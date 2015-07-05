@@ -23,7 +23,16 @@ program dan is
 	global integer arr[10];
 	
 	global string strtest;
+	global bool truebool;
+	global bool falsebool;
+	
 begin
+	putBool(true);
+	putBool(false);
+	truebool := 7 > 6;
+	falsebool := 6 > 7;
+	putBool(truebool);
+	putBool(falsebool);
 	//teststrproc("hello", strtest);
 	//putString(strtest);
 
