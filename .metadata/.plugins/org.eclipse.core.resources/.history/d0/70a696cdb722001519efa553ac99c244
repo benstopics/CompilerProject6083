@@ -57,12 +57,6 @@ public class EmitterProcedureCall extends EmitterStatement {
 			
 			String destTemp = "%_" + dest.getMetaKeyID() + dest.getVariableName();
 			
-			String destStoreTemp = destTemp;
-			if(!getIsIn(dest) && getIsParam(dest))
-				destStoreTemp = loadTempValueAtPtr(destTemp, dest);
-			
-			addLine(true, "store i8* " + callTemp + ", i8** " + destStoreTemp + ", align 4");
-			
 			// First get destination ptr
 			String destPtrTemp;
 			if(dest.isArray()) {
@@ -72,6 +66,8 @@ public class EmitterProcedureCall extends EmitterStatement {
 				destPtrTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
 			}
 			
+			addLine(true, "store i8* " + callTemp + ", i8** " + destTemp + ", align 4");
+			//addLine(true, "%2 = load i8** %newstr, align 4"); // destPtrTemp
 			String loadIOBufTemp = "%" + getStatementList().nextTempIndex();
 			addLine(true, loadIOBufTemp + " = load [0 x %struct._iobuf]** @_imp___iob, align 4");
 			String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();

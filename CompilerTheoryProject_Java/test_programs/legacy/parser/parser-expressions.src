@@ -12,6 +12,11 @@ program dan is
 		putString(strout);
 	end procedure;
 	
+	global procedure testgetstr(string getstr out)
+	begin
+		getString(getstr);
+	end procedure;
+	
 	global integer result;
 	global float ftest;
 	global integer i;

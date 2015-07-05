@@ -57,11 +57,7 @@ public class EmitterProcedureCall extends EmitterStatement {
 			
 			String destTemp = "%_" + dest.getMetaKeyID() + dest.getVariableName();
 			
-			String destStoreTemp = destTemp;
-			if(!getIsIn(dest) && getIsParam(dest))
-				destStoreTemp = loadTempValueAtPtr(destTemp, dest);
-			
-			addLine(true, "store i8* " + callTemp + ", i8** " + destStoreTemp + ", align 4");
+			addLine(true, "store i8* " + callTemp + ", i8** " + destTemp + ", align 4");
 			
 			// First get destination ptr
 			String destPtrTemp;

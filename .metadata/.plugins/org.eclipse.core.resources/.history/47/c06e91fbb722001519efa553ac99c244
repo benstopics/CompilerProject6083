@@ -57,11 +57,13 @@ public class EmitterProcedureCall extends EmitterStatement {
 			
 			String destTemp = "%_" + dest.getMetaKeyID() + dest.getVariableName();
 			
-			String destStoreTemp = destTemp;
-			if(!getIsIn(dest) && getIsParam(dest))
-				destStoreTemp = loadTempValueAtPtr(destTemp, dest);
-			
-			addLine(true, "store i8* " + callTemp + ", i8** " + destStoreTemp + ", align 4");
+			addLine(true, "store i8* " + callTemp + ", i8** " + destTemp + ", align 4");
+			//addLine(true, "%2 = load i8** %newstr, align 4"); // destPtrTemp
+			String loadIOBufTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, loadIOBufTemp + " = load [0 x %struct._iobuf]** @_imp___iob, align 4");
+			String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
+			addLine(true, arrayIdxTemp + " = getelementptr inbounds [0 x %struct._iobuf]* " + loadIOBufTemp + ", i32 0, i32 0");
+			String fgetsTemp = "%call" + getStatementList().nextExprTempIndex();
 			
 			// First get destination ptr
 			String destPtrTemp;
@@ -72,11 +74,6 @@ public class EmitterProcedureCall extends EmitterStatement {
 				destPtrTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
 			}
 			
-			String loadIOBufTemp = "%" + getStatementList().nextTempIndex();
-			addLine(true, loadIOBufTemp + " = load [0 x %struct._iobuf]** @_imp___iob, align 4");
-			String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
-			addLine(true, arrayIdxTemp + " = getelementptr inbounds [0 x %struct._iobuf]* " + loadIOBufTemp + ", i32 0, i32 0");
-			String fgetsTemp = "%call" + getStatementList().nextExprTempIndex();
 			addLine(true, fgetsTemp + " = call i8* @fgets(i8* " + destPtrTemp + ", i32 100, %struct._iobuf* " + arrayIdxTemp + ")");
 			//addLine(true, "%4 = load i8** %newstr, align 4"); // destPtrTemp duplicate
 			String sscanfTemp = "%call" + getStatementList().nextExprTempIndex();

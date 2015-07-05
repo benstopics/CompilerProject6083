@@ -101,24 +101,7 @@ public class Emitter extends CompilerComponent {
 		mainLines.add("@.str_putstring = private unnamed_addr constant [4 x i8] c\"%s\\0A\\00\", align 1");
 		mainLines.add("@.str_sscanfqualify = private unnamed_addr constant [21 x i8] c\"%[a-zA-Z0-9 _,;:.']\\0A\\00\", align 1");
 		mainLines.add("@_imp___iob = external global [0 x %struct._iobuf]*");
-		mainLines.add("");
-		mainLines.add("declare i8* @malloc(i32)");
-		mainLines.add("");
-		mainLines.add("declare i8* @strcpy(i8*, i8*)");
-		mainLines.add("");
-		mainLines.add("declare i32 @scanf(i8*, ...)");
-		mainLines.add("");
-		mainLines.add("declare i8* @gets(i8*)");
-		mainLines.add("");
-		mainLines.add("declare i32 @sscanf(i8*, i8*, ...)");
-		mainLines.add("");
-		mainLines.add("%struct._iobuf = type { i8*, i32, i8*, i32, i32, i32, i32, i8* }");
-		mainLines.add("");
-		mainLines.add("declare i8* @fgets(i8*, i32, %struct._iobuf*)");
-		mainLines.add("");
-		mainLines.add("declare i32 @printf(i8*, ...)");
-		mainLines.add("");
-		mainLines.add("declare void @exit(i32)");
+		
 		mainLines.add("");
 		mainLines.add("define void @check_int_to_bool(i32 %test) {");
 		mainLines.add("entry:");
@@ -151,6 +134,23 @@ public class Emitter extends CompilerComponent {
 		mainLines.add(tab + "ret i32 0");
 		mainLines.add("}");
 		mainLines.add("");
+		mainLines.add("declare i8* @malloc(i32)");
+		mainLines.add("");
+		mainLines.add("declare i8* @strcpy(i8*, i8*)");
+		mainLines.add("");
+		mainLines.add("declare i32 @scanf(i8*, ...)");
+		mainLines.add("");
+		mainLines.add("declare i8* @gets(i8*)");
+		mainLines.add("");
+		mainLines.add("declare i32 @sscanf(i8*, i8*, ...)");
+		mainLines.add("");
+		mainLines.add("%struct._iobuf = type { i8*, i32, i8*, i32, i32, i32, i32, i8* }");
+		mainLines.add("");
+		mainLines.add("declare i8* @fgets(i8*, i32, %struct._iobuf*)");
+		mainLines.add("");
+		mainLines.add("declare i32 @printf(i8*, ...)");
+		mainLines.add("");
+		mainLines.add("declare void @exit(i32)");
 		
 		for(StringConstant stringConstant : getStringConstants()) {
 			mainLines.add("@.str" + stringConstant.getIndex() + " = private unnamed_addr constant ["

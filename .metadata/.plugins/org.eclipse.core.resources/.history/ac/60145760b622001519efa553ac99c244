@@ -119,6 +119,7 @@ public class Emitter extends CompilerComponent {
 		mainLines.add("declare i32 @printf(i8*, ...)");
 		mainLines.add("");
 		mainLines.add("declare void @exit(i32)");
+		
 		mainLines.add("");
 		mainLines.add("define void @check_int_to_bool(i32 %test) {");
 		mainLines.add("entry:");
