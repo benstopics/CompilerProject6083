@@ -11,13 +11,14 @@ public class Main {
 				boolean showAST = false;
 				if(args.length <= 0)
 					throw new Exception("Not enough arguments. Use the \"--help\" flag for details.");
-				for(int i=0; i<args.length; i++) {
-					if(args[i].equals("-s"))
-						inputFile = args[++i];
-					else if(args[i].equals("-o"))
-						outputFile = args[++i];
-					else if(args[i].equals("-show-ast"))
+				for(String arg : args) {
+					if(arg.startsWith("-S"))
+						inputFile = arg.substring(2);
+					else if(arg.startsWith("-O"))
+						outputFile = arg.substring(2);
+					if(arg.equals("-show-ast"))
 						showAST = true;
+					outputFile = args[1];
 				}
 				if(inputFile == null)
 					throw new Exception("Input file path not specified. Use the \"--help\" flag for details.");
@@ -29,8 +30,6 @@ public class Main {
 	}
 	
 	private static void printHelp() {
-		System.out.println("  -s <file>\tSpecify source file path"
-				+ "\n  -o <file>\tSpecify output file path"
-				+ "\n  -show-ast\tDisplay parsed AST in console");
+		
 	}
 }

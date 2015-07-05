@@ -29,8 +29,8 @@ public class Main {
 	}
 	
 	private static void printHelp() {
-		System.out.println("  -s <file>\tSpecify source file path"
-				+ "\n  -o <file>\tSpecify output file path"
-				+ "\n  -show-ast\tDisplay parsed AST in console");
+		System.out.println("  -s <file>\t\tSpecify source file path"
+				+ "\n  -o <file>\t\tSpecify output file path"
+				+ "\n  -show-ast\t\tDisplay parsed AST in console");
 	}
 }

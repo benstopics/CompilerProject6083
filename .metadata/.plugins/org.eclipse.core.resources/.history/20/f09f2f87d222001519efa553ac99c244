@@ -1,0 +1,19 @@
+package com.benjamindward.compiler;
+
+public class Main {
+	public static void main(String[] args) {
+		try {
+			String inputFile;
+			String outputFile = "a.ll";
+			if(args.length > 0)
+				inputFile = args[0];
+			else
+				throw new Exception("Input file not specified.");
+			if(args.length > 1)
+				outputFile = args[1];
+			new Compiler(inputFile, outputFile).compileProgram();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+}

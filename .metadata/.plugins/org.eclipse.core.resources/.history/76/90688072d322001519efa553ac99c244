@@ -21,15 +21,6 @@ import com.benjamindward.legacy.ast.TokenAST;
  */
 public class Compiler {
 	
-	private boolean printAST;
-	
-	public boolean isPrintAST() {
-		return printAST;
-	}
-
-	public void setPrintAST(boolean printAST) {
-		this.printAST = printAST;
-	}
 	private Emitter emitter;
 	public Emitter getEmitter() {
 		return emitter;
@@ -87,7 +78,6 @@ public class Compiler {
         setParser(new Parser(this));
         setSemanticAnalyzer(new SemanticAnalyzer(this));
         setEmitter(new Emitter(this, outputFilePath));
-        setPrintAST(printAST);
         
     }
     
@@ -106,8 +96,7 @@ public class Compiler {
 	public Program compileProgram() throws Exception {
     	try {
     		Program astRootNode = getParser().parseProgram();
-    		if(isPrintAST())
-    			astRootNode.print();
+    		astRootNode.print();
 			getEmitter().emitProgram(astRootNode);
 		} catch (SyntaxErrorException e) {
 			getErrorHandler().syntaxError(e.getMessage());

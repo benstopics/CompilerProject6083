@@ -46,6 +46,8 @@ void testgetstr(char *getstr) {
 	printf("%s\n", getstr);
 }
 
+void putbool(int
+
 int main () {
 	/*int x[1] = { 0 };
 	struct ArrWrapper arr;

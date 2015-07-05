@@ -1,0 +1,27 @@
+package com.benjamindward.compiler;
+
+public class Main {
+	public static void main(String[] args) {
+		try {
+			if(args.length == 1 && args[0].equals("--help"))
+				printHelp();
+			else {
+				String inputFile;
+				String outputFile = "a.ll";
+				boolean showAST = false;
+				if(args.length <= 0)
+					throw new Exception("Not enough arguments. Use \"--help\" flag for details.\n");
+				for(String arg : args) {
+					outputFile = args[1];
+				}
+				new Compiler(inputFile, outputFile).compileProgram();
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private static void printHelp() {
+		
+	}
+}

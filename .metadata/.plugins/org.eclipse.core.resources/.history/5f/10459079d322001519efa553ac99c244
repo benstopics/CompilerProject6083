@@ -106,8 +106,7 @@ public class Compiler {
 	public Program compileProgram() throws Exception {
     	try {
     		Program astRootNode = getParser().parseProgram();
-    		if(isPrintAST())
-    			astRootNode.print();
+    		astRootNode.print();
 			getEmitter().emitProgram(astRootNode);
 		} catch (SyntaxErrorException e) {
 			getErrorHandler().syntaxError(e.getMessage());
