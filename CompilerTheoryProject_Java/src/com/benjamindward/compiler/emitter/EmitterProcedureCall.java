@@ -51,7 +51,29 @@ public class EmitterProcedureCall extends EmitterStatement {
 					+ " = call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([3 x i8]* @.str_getfloat, i32 0, i32 0), float* "
 					+ destTemp + ")");
 		} else if(procedureCall.getProcedureName().equals("getstring")) {
-			
+			Destination dest = (Destination) procedureCall.getArguments().get(0);
+			String callTemp = "%call" + getStatementList().nextExprTempIndex();
+			addLine(true, callTemp + " = call i8* @malloc(i32 100)");
+			String destPtrTemp = "%_" + dest.getMetaKeyID() + dest.getVariableName();
+			//String destPtrTemp;
+			/*if(dest.isArray()) {
+				String exprTemp = getExprTempString(dest.getArrayIndexExpression()).getName();
+				destPtrTemp = loadTempArrayItemPtr(dest, exprTemp);
+			} else {
+				destPtrTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
+			}*/
+			addLine(true, "store i8* " + callTemp + ", i8** " + destPtrTemp + ", align 4");
+			//addLine(true, "%2 = load i8** %newstr, align 4"); // destPtrTemp
+			String loadIOBufTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, loadIOBufTemp + " = load [0 x %struct._iobuf]** @_imp___iob, align 4");
+			String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
+			addLine(true, arrayIdxTemp + " = getelementptr inbounds [0 x %struct._iobuf]* " + loadIOBufTemp + ", i32 0, i32 0");
+			String fgetsTemp = "%call" + getStatementList().nextTempIndex();
+			addLine(true, fgetsTemp + " = call i8* @fgets(i8* " + destPtrTemp + ", i32 100, %struct._iobuf* " + arrayIdxTemp + ")");
+			//addLine(true, "%4 = load i8** %newstr, align 4"); // destPtrTemp duplicate
+			String sscanfTemp = "%call" + getStatementList().nextExprTempIndex();
+			addLine(true, sscanfTemp + " = call i32 (i8*, i8*, ...)* @sscanf(i8* " + fgetsTemp
+					+ ", i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* " + destPtrTemp + ")");
 		} else if(procedureCall.getProcedureName().equals("putbool")) {
 			
 		} else if(procedureCall.getProcedureName().equals("putinteger")) {

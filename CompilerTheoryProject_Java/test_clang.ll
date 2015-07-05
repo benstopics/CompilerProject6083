@@ -92,6 +92,7 @@ entry:
   %ftest = alloca float, align 4
   %teststr2 = alloca i8*, align 4
   %teststr3 = alloca i8*, align 4
+  %newstr = alloca i8*, align 4
   store i32 0, i32* %retval
   store float 0x4016666660000000, float* %ftest, align 4
   store i8* getelementptr inbounds ([6 x i8]* @.str3, i32 0, i32 0), i8** %teststr2, align 4
@@ -101,6 +102,16 @@ entry:
   %1 = load i8** %teststr3, align 4
   store i8* %1, i8** %teststr2, align 4
   %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8]* @.str5, i32 0, i32 0))
+  %call2 = call i8* @malloc(i32 100)
+  store i8* %call2, i8** %newstr, align 4
+  %2 = load i8** %newstr, align 4
+  %3 = load [0 x %struct._iobuf]** @_imp___iob, align 4
+  %arrayidx = getelementptr inbounds [0 x %struct._iobuf]* %3, i32 0, i32 0
+  %call3 = call i8* @fgets(i8* %2, i32 100, %struct._iobuf* %arrayidx)
+  %4 = load i8** %newstr, align 4
+  %call4 = call i32 (i8*, i8*, ...)* @sscanf(i8* %call3, i8* getelementptr inbounds ([21 x i8]* @.str1, i32 0, i32 0), i8* %4)
+  %5 = load i8** %newstr, align 4
+  %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* %5)
   ret i32 0
 }
 

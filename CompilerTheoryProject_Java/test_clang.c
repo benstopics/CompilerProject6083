@@ -118,6 +118,10 @@ int main () {
 	teststr2 = teststr3;
 	printf("%s\n", "testtest");
 	
+	char *newstr = (char *) malloc(100);
+	sscanf(fgets(newstr, sizeof(char) * 100, stdin), "%[a-zA-Z0-9 _,;:.']\n", newstr);
+	printf("%s\n", newstr);
+	
 	/*char *true = "true";
 	char *false = "false";
 	printf("%s\n", true);

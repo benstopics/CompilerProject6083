@@ -29,6 +29,9 @@ begin
 	teststrproc("teststr2", strtest);
 	putString(strtest);
 	
+	getString(strtest);
+	putString(strtest);
+	
 	//getFloat(ftest);
 	//putFloat(ftest);
 

@@ -1,0 +1,147 @@
+package com.benjamindward.compiler.emitter;
+
+import java.util.ArrayList;
+
+import com.benjamindward.compiler.errorhandler.ErrorHandler.SyntaxErrorException;
+import com.benjamindward.compiler.semantic.abstractclasses.Destination;
+import com.benjamindward.compiler.semantic.abstractclasses.ExpressionNode;
+import com.benjamindward.compiler.semantic.abstractclasses.Factor;
+import com.benjamindward.compiler.semantic.abstractclasses.Parameter;
+import com.benjamindward.compiler.semantic.abstractclasses.ProcedureCall;
+
+
+public class EmitterProcedureCall extends EmitterStatement {
+	private ProcedureCall procedureCall;
+	
+	public ProcedureCall getProcedureCall() {
+		return procedureCall;
+	}
+
+	public void setProcedureCall(ProcedureCall procedureCall) {
+		this.procedureCall = procedureCall;
+	}
+
+	public EmitterProcedureCall(EmitterStatementList statementList, ProcedureCall procedureCall) throws Exception {
+		super(statementList);
+		
+		setProcedureCall(procedureCall);
+		// ---INPUT LIBRARY--- //
+		if(procedureCall.getProcedureName().equals("getbool")) {
+			Destination getDest = (Destination) procedureCall.getArguments().get(0);
+			String destTemp = "%_" + getDest.getMetaKeyID() + getDest.getVariableName();
+			addLine(true, "%call" + getStatementList().nextExprTempIndex()
+					+ " = call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([3 x i8]* @.str_getbool, i32 0, i32 0), i32* "
+					+ destTemp + ")");
+			String checkBoolTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, checkBoolTemp + " = load i32* " + destTemp + ", align 4");
+			addLine(true, "call void @check_int_to_bool(i32 " + checkBoolTemp + ")");
+			String toboolTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, toboolTemp + " = icmp ne i32 " + checkBoolTemp + ", 0"); // Convert to bool
+			addLine(true, "store i1 " + toboolTemp + ", i1* " + destTemp);
+		} else if(procedureCall.getProcedureName().equals("getinteger")) {
+			Destination getDest = (Destination) procedureCall.getArguments().get(0);
+			String destTemp = "%_" + getDest.getMetaKeyID() + getDest.getVariableName();
+			addLine(true, "%call" + getStatementList().nextExprTempIndex()
+					+ " = call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([3 x i8]* @.str_getint, i32 0, i32 0), i32* "
+					+ destTemp + ")");
+		} else if(procedureCall.getProcedureName().equals("getfloat")) {
+			Destination getDest = (Destination) procedureCall.getArguments().get(0);
+			String destTemp = "%_" + getDest.getMetaKeyID() + getDest.getVariableName();
+			addLine(true, "%call" + getStatementList().nextExprTempIndex()
+					+ " = call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([3 x i8]* @.str_getfloat, i32 0, i32 0), float* "
+					+ destTemp + ")");
+		} else if(procedureCall.getProcedureName().equals("getstring")) {
+			Destination dest = (Destination) procedureCall.getArguments().get(0);
+			String callTemp = "%call" + getStatementList().nextExprTempIndex();
+			addLine(true, callTemp + " = call i8* @malloc(i32 100)");
+			String destPtrTemp;
+			if(dest.isArray()) {
+				String exprTemp = getExprTempString(dest.getArrayIndexExpression()).getName();
+				destPtrTemp = loadTempArrayItemPtr(dest, exprTemp);
+			} else {
+				destPtrTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
+			}
+			addLine(true, "store i8* " + callTemp + ", i8** " + destPtrTemp + ", align 4");
+			//addLine(true, "%2 = load i8** %newstr, align 4"); // destPtrTemp
+			String loadIOBufTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, loadIOBufTemp + " = load [0 x %struct._iobuf]** @_imp___iob, align 4");
+			String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
+			addLine(true, arrayIdxTemp + " = getelementptr inbounds [0 x %struct._iobuf]* " + loadIOBufTemp + ", i32 0, i32 0");
+			addLine(true, "%call3 = call i8* @fgets(i8* %2, i32 100, %struct._iobuf* %arrayidx)");
+			addLine(true, "%4 = load i8** %newstr, align 4");
+			addLine(true, "%call4 = call i32 (i8*, i8*, ...)* @sscanf(i8* %call3, i8* getelementptr inbounds ([21 x i8]* @.str1, i32 0, i32 0), i8* %4)");
+		} else if(procedureCall.getProcedureName().equals("putbool")) {
+			
+		} else if(procedureCall.getProcedureName().equals("putinteger")) {
+			ExpressionNode valueExprNode = procedureCall.getArguments().get(0);
+			String exprTemp = getExprTempString(valueExprNode).getName();
+			addLine(true, "%call" + getStatementList().nextExprTempIndex() +
+					" = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putint, i32 0, i32 0), i32 " + exprTemp + ")");
+		} else if(procedureCall.getProcedureName().equals("putfloat")) {
+			ExpressionNode valueExprNode = procedureCall.getArguments().get(0);
+			String exprTemp = getExprTempString(valueExprNode).getName();
+			String convTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, convTemp + " = fpext float " + exprTemp + " to double");
+			addLine(true, "%call" + getStatementList().nextExprTempIndex() +
+					" = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putfloat, i32 0, i32 0), double " + convTemp + ")");
+		} else if(procedureCall.getProcedureName().equals("putstring")) {
+			ExpressionNode arg = procedureCall.getArguments().get(0);
+			Destination dest = null;
+			Factor factor = null;
+			if(arg instanceof Destination)
+				dest = (Destination) arg;
+			else if(arg instanceof Factor)
+				factor = (Factor) arg;
+			
+			String valueTemp;
+			if(dest != null) {
+				if(dest.isArray()) {
+					String exprTemp = getExprTempString(dest.getArrayIndexExpression()).getName();
+					valueTemp = loadTempArrayItemPtr(dest, exprTemp);
+				} else {
+					valueTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
+				}
+			} else if(factor != null) {
+				valueTemp = getExprTempString(factor).getName();
+			} else
+				throw new SyntaxErrorException("Compiler error: putString() argument neither instance of destination nor factor");
+			
+			addLine(true, "%call" + getStatementList().nextExprTempIndex()
+					+ " = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* "
+					+ valueTemp + ")");
+		} else {
+			// User-defined procedure
+			String callLine = "call void @_"
+					+ procedureCall.getProcedureKey().getMetaKeyID() + procedureCall.getProcedureName() + "(";
+			if(procedureCall.getProcedureKey().getParameters().size() > 0) {
+				ArrayList<ExpressionNode> args = procedureCall.getArguments();
+				ArrayList<Parameter> params = procedureCall.getProcedureKey().getParameters();
+				for(int i=0; i < args.size(); i++) {
+					String type = Emitter.typeToLLVMDataType(false, args.get(i).getEvaluatedType());
+					String argTemp;
+					if(params.get(i).isIn()) { // In, pass value
+						argTemp = getExprTempString(args.get(i)).getName();
+						callLine += type + " " + argTemp + ", ";
+					} else { // Out, pass address
+						Destination dest = (Destination) args.get(i);
+						String destTemp = "%_" + dest.getMetaKeyID() + dest.getVariableName();
+						if(dest.isArray()) {
+							String arrayitemidxstr = getExprTempString(dest.getArrayIndexExpression()).getName();
+							String idxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
+							addLine(true, idxTemp + " = getelementptr inbounds [" + dest.getArraySize()
+									+ " x " + type + "]* " + destTemp + ", i32 0, i32 " + arrayitemidxstr);
+							callLine += type + "* " + idxTemp + ", ";
+						} else {
+							callLine += type + "* " + destTemp + ", ";
+						}
+					}
+				}
+				callLine = callLine.substring(0, callLine.length()-2) + ")";
+			} else {
+				callLine += ")";
+			}
+			
+			addLine(true, callLine);
+		}
+	}
+}
