@@ -31,7 +31,7 @@ public class ErrorHandler extends CompilerComponent {
      * @throws IOException 
      */
     public void syntaxError(String msg) throws SyntaxErrorException, IOException {
-        System.out.println();
+        //System.out.println();
         // Generate error msg
         String errorMsg = "Syntax Error @ line " + getCompiler().getLexer().getLineNumber() + " -> " + msg + "\n\n" + getFormatedCharLog(true)
         		+ "\n--------------------";
@@ -72,7 +72,7 @@ public class ErrorHandler extends CompilerComponent {
 	        while(lineNumBackup == getCompiler().getLexer().getLineNumber() &&
 	        		!Lexer.isNewLine(getCompiler().getLexer().getLookaheadChar()) &&
 	        		getCompiler().getLexer().getLookaheadToken() != Token.EOF) {
-	        	System.out.println(getCompiler().getLexer().getLookaheadToken());
+	        	//System.out.println(getCompiler().getLexer().getLookaheadToken());
 	        	charLogBackup += getCompiler().getLexer().consumeChar();
 	        }
     	}

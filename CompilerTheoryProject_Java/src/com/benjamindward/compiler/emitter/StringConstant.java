@@ -18,7 +18,7 @@ public class StringConstant {
 	}
 
 	public StringConstant(String value, int index) {
-		System.out.println("StringConstant: " + value);
+		//System.out.println("StringConstant: " + value);
 		this.value = value;
 		this.index = index;
 		this.charCount = value.length();

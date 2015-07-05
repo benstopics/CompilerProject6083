@@ -72,7 +72,7 @@ public class SymbolTable {
 	}
 	
 	public SymbolTableKey lookupInCodeBlockBottomUp(String keyName) {
-		//System.out.println("# of children: " + getKeys().size());
+		////System.out.println("# of children: " + getKeys().size());
 		// Attempt to find key in all scopes
 		SymbolTableKey foundKey = lookupMyScope(keyName); // Attempt to find inner most key match
 		if(foundKey == null) {
@@ -91,7 +91,7 @@ public class SymbolTable {
 	}
 	
 	public SymbolTableKey lookupBottomUp(String keyName) {
-		//System.out.println("# of children: " + getKeys().size());
+		////System.out.println("# of children: " + getKeys().size());
 		// Attempt to find key in all scopes
 		SymbolTableKey foundKey = lookupMyScope(keyName); // Attempt to find inner most key match
 		if(foundKey == null) {

@@ -22,46 +22,46 @@ public class TestsBeta {
 	}
 	
 	public static void TestCompilerMinimum() throws Exception {
-    	System.out.println("\n-:| TEST COMPILER >>> MINIMUM PROGRAM |:-\n");
+    	//System.out.println("\n-:| TEST COMPILER >>> MINIMUM PROGRAM |:-\n");
     	
     	Compiler compiler = new Compiler("test_programs/minimum_program.src", "a.ll");
     	compiler.compileProgram().print();
     }
 
 	public static void TestCompilerBasic() throws Exception {
-    	System.out.println("\n-:| TEST COMPILER >>> BASIC PROGRAM |:-\n");
+    	//System.out.println("\n-:| TEST COMPILER >>> BASIC PROGRAM |:-\n");
     	
     	Compiler compiler = new Compiler("test_programs/basic_program.src", "a.ll");
     	compiler.compileProgram().print();
     }
 	
 	public static void TestCompilerProvidedTests() throws Exception {
-    	System.out.println("\n-:| TEST COMPILER >>> PROVIDED TEST PROGRAMS |:-\n");
+    	//System.out.println("\n-:| TEST COMPILER >>> PROVIDED TEST PROGRAMS |:-\n");
     	
     	Compiler compiler = new Compiler("provided_test_programs/correct/fromJake.src", "a.ll");
     	compiler.compileProgram().print();
     	
-    	System.out.println();
+    	//System.out.println();
     	
     	compiler = new Compiler("provided_test_programs/correct/test_heap.src", "a.ll");
     	compiler.compileProgram().print();
     	
-    	System.out.println();
+    	//System.out.println();
     	
     	compiler = new Compiler("provided_test_programs/correct/test_program.src", "a.ll");
     	compiler.compileProgram().print();
     	
-    	System.out.println();
+    	//System.out.println();
     	
     	compiler = new Compiler("provided_test_programs/correct/test_program_array.src", "a.ll");
     	compiler.compileProgram().print();
     	
-    	System.out.println();
+    	//System.out.println();
     	
     	compiler = new Compiler("provided_test_programs/correct/test_program_minimal.src", "a.ll");
     	compiler.compileProgram().print();
     	
-    	System.out.println();
+    	//System.out.println();
     	
     	compiler = new Compiler("provided_test_programs/correct/test_program_with_errors.src", "a.ll");
     	compiler.compileProgram().print();

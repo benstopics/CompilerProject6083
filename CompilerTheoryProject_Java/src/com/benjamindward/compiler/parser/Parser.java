@@ -148,10 +148,10 @@ public class Parser extends CompilerComponent {
 	 */
 	private Token parseTokenByReservedWord(String str, boolean optional, String message) throws SyntaxErrorException, IOException {
 		Token result = null; // Assume not parsed
-		//System.out.println("Attempting to match " + getLookaheadToken() + " with " + str);
+		////System.out.println("Attempting to match " + getLookaheadToken() + " with " + str);
 		if(getLookaheadToken().getStr().equals(str)) { // Check token type against comparison type
 			result = nextToken(); // Continue, returning parsed token
-			//System.out.println("matched " + result + " while looking for " + str);
+			////System.out.println("matched " + result + " while looking for " + str);
 		} else if(!optional) { // If not optional
 			if(message != null)
 				// Error handling, missing token
@@ -191,7 +191,7 @@ public class Parser extends CompilerComponent {
 			throw new SyntaxErrorException("'" + getLookaheadToken() + "' is a reserved word and cannot be used as an " + Token.typeToStr(type) + ".");
 		else if(getLookaheadToken().getType() == type) { // Check token type against comparison type
 			result = nextToken(); // Continue, returning parsed token
-			//System.out.println("matched " + result);
+			////System.out.println("matched " + result);
 		} else if(!optional) // If not optional
 			// Error handling, missing token
 			if(message != null)
@@ -334,14 +334,14 @@ public class Parser extends CompilerComponent {
 	 
 	 */
 	private ArrayList<Declaration> parseDeclarationsList() throws Exception {
-		//System.out.println("Declaration list");
+		////System.out.println("Declaration list");
 		ArrayList<Declaration> declarations = new ArrayList<Declaration>();
 		
 		while(true) { // Parse statements, if any
 			Declaration declaration = parseDeclaration();
-			//System.out.println("Looking for declaration");
+			////System.out.println("Looking for declaration");
 			if(declaration != null) { // If statement parsed
-				//System.out.println("Declaration");
+				////System.out.println("Declaration");
 				declarations.add(declaration);
 				parseTokenByType(TokenTypes.SEMICOL, false); // Find ending semicolon
 			} else
@@ -365,28 +365,28 @@ public class Parser extends CompilerComponent {
 		Token globalToken = parseTokenByReservedWord("global", true);
 		if(globalToken != null) { // Not optional since global was found
 			if(!getSemanticAnalyzer().inOutMostScope()) {
-				//System.out.println(getSemanticAnalyzer().getRootSymbolTable().getChildSymbolTable());
+				////System.out.println(getSemanticAnalyzer().getRootSymbolTable().getChildSymbolTable());
 				throw new SyntaxErrorException("Only declarations in the outer-most scope can be declared as global.");
 			} else if(getLookaheadToken().getStr().equals("procedure"))
 				return parseProcedureDeclaration();
 			else
 				return parseVariableDeclaration(false);
 		} else if(getLookaheadToken().getStr().equals("procedure") || getLookaheadToken().isTypeMarkReservedWordToken()) {
-			//System.out.println("procedure or typemark");
+			////System.out.println("procedure or typemark");
 			if(getSemanticAnalyzer().inOutMostScope()) {
 				throw new SyntaxErrorException("Declarations in the outer-most scope must be declared as global.");
 			} else if(getLookaheadToken().getStr().equals("procedure")) {
-				//System.out.println("procedure");
+				////System.out.println("procedure");
 				return parseProcedureDeclaration();
 			} else if(getLookaheadToken().isTypeMarkReservedWordToken()) {
-				//System.out.println("typemark");
+				////System.out.println("typemark");
 				return parseVariableDeclaration(false);
 			} else {
-				//System.out.println("no declaration ahead");
+				////System.out.println("no declaration ahead");
 				return null;
 			}
 		} else {
-			//System.out.println("no declaration ahead");
+			////System.out.println("no declaration ahead");
 			return null;
 		}
 	}
@@ -492,9 +492,9 @@ public class Parser extends CompilerComponent {
 		enterScope(true);
 		
 		// Procedure body
-		System.out.println("BEFORE PROCEDURE DECLARATIONS");
+		//System.out.println("BEFORE PROCEDURE DECLARATIONS");
 		ArrayList<Declaration> declarations = parseDeclarationsList();
-		System.out.println("AFTER PROCEDURE DECLARATIONS");
+		//System.out.println("AFTER PROCEDURE DECLARATIONS");
 		
 		parseTokenByReservedWord("begin", false);
 		ArrayList<Statement> statements = parseStatementsList(false);
@@ -547,7 +547,7 @@ public class Parser extends CompilerComponent {
 			return null;
 		} else {
 			VariableDeclaration variableDeclaration = parseVariableDeclaration(true); // Check variable declaration
-			System.out.println("Parameter variable array size: " + variableDeclaration.getArraySize() + ", metaID: " + variableDeclaration.getInfo().getMetaKeyID());
+			//System.out.println("Parameter variable array size: " + variableDeclaration.getArraySize() + ", metaID: " + variableDeclaration.getInfo().getMetaKeyID());
 			
 			// Check for in or out
 			Token inOut;
@@ -614,7 +614,7 @@ public class Parser extends CompilerComponent {
 	 */
 	private ProcedureCall parseProcedureCall(Token idToken) throws Exception {
 		
-		System.out.println("Procedure call");
+		//System.out.println("Procedure call");
 		
 		parseTokenByType(TokenTypes.O_PAR, false); // Begin argument list
 		
@@ -653,8 +653,8 @@ public class Parser extends CompilerComponent {
 							boolean matchArrayItem = dest.ptrToArrayItem() && !parameter.isArray();
 							boolean matchArrayPtr = !dest.ptrToArrayItem() && dest.isArray() && parameter.isArray();
 							boolean matchNotArray = !dest.isArray() && !parameter.isArray();
-							System.out.println("isArray: " + dest.isArray() + ", Param.isArray: " + parameter.isArray());
-							System.out.println(matchArrayItem + " " + matchArrayPtr + " " + matchNotArray + " " + parameter.getKeyName() + ":" + parameter.getArraySize() + ":" + parameter.isArray());
+							//System.out.println("isArray: " + dest.isArray() + ", Param.isArray: " + parameter.isArray());
+							//System.out.println(matchArrayItem + " " + matchArrayPtr + " " + matchNotArray + " " + parameter.getKeyName() + ":" + parameter.getArraySize() + ":" + parameter.isArray());
 							if(matchArrayItem || matchArrayPtr || matchNotArray) { // Match compatibility concerning arrays
 								arguments.add(parsedArg);
 							} else {
@@ -664,7 +664,7 @@ public class Parser extends CompilerComponent {
 							throw new SyntaxErrorException("Negation implies value, not destination.");
 						}
 					} else {
-						System.out.println(parsedArg instanceof Destination);
+						//System.out.println(parsedArg instanceof Destination);
 						throw new SyntaxErrorException("Expected variable name of type " + Token.typeToStr(parameter.getTypemark()) + " for 'out' argument.");
 					}
 				}
@@ -690,10 +690,10 @@ public class Parser extends CompilerComponent {
 	 * @throws Exception 
 	 */
 	private AssignmentStatement parseAssignmentStatement(Token idToken) throws Exception {
-		System.out.println("Assignment statement");
+		//System.out.println("Assignment statement");
 		Destination destination = parseDestination(false, idToken, false);
 		
-		System.out.println("Got here 1");
+		//System.out.println("Got here 1");
 		
 		parseTokenByType(TokenTypes.ASSIGN, false); // Parse ':='
 		// Assignment expression operand
@@ -701,12 +701,12 @@ public class Parser extends CompilerComponent {
 		// Parse operand expression and semantically analyze
 		ExpressionNode operandExpression = parseExpression(false);
 		
-		System.out.println("Got here 2");
+		//System.out.println("Got here 2");
 		
 		if(!Token.typesAreCompatible(operandExpression.getEvaluatedType(), destination.getTypemark())) // Not compatible
 			throw new SyntaxErrorException("Cannot explicitly cast " + Token.typeToStr(operandExpression.getEvaluatedType()) + " to " +  Token.typeToStr(destination.getTypemark()) + ".");
 		
-		System.out.println("End Assignment statement");
+		//System.out.println("End Assignment statement");
 			
 		return new AssignmentStatement(destination, operandExpression); // Operand expression
 	}
@@ -721,15 +721,15 @@ public class Parser extends CompilerComponent {
 	 * @throws Exception
 	 */
 	private Destination parseDestination(boolean negate, Token idToken, boolean name) throws Exception {
-		System.out.println("parseDestination negation: " + negate);
+		//System.out.println("parseDestination negation: " + negate);
 		VariableKey idKey = getSemanticAnalyzer().lookupVariableKey(idToken.getStr());
-		System.out.println("LOOK UP VARIABLEKEY " + idToken.getStr() + " ISPARAM " + idKey.isArray());
+		//System.out.println("LOOK UP VARIABLEKEY " + idToken.getStr() + " ISPARAM " + idKey.isArray());
 		if(idKey != null) { // ID in symbol table
 			if(idKey.isArray()) { // Lookedup symbol is array
-				System.out.println("isArray = true");
+				//System.out.println("isArray = true");
 				Destination destination;
 				if(name) {
-					System.out.println(idKey.getKeyName() + " is NAME");
+					//System.out.println(idKey.getKeyName() + " is NAME");
 					if(parseTokenByType(TokenTypes.O_BRK, true) != null) { // Brackets imply index / array item
 						// Integer index expression
 						ExpressionNode indexExpression = parseExpression(false); // Integer index expression parsed
@@ -737,14 +737,14 @@ public class Parser extends CompilerComponent {
 						parseTokenByType(TokenTypes.C_BRK, false);
 						// Set destination type other than NULL to imply array item
 						destination = new Destination(negate, idKey, indexExpression);
-						System.out.println("factor " + destination.getVariableName() + " array index expression: " + destination.getArrayIndexExpression());
+						//System.out.println("factor " + destination.getVariableName() + " array index expression: " + destination.getArrayIndexExpression());
 					} else { // No brackets imply array ptr
 						// Save negation for later, set index expression other than NULL to set isArray to true but token type to NULL to imply array ptr
 						destination = new Destination(negate, idKey);
-						System.out.println("destination pass array by pointer");
+						//System.out.println("destination pass array by pointer");
 					}
 				} else {
-					System.out.println(idKey.getKeyName() + " is DESTINATION");
+					//System.out.println(idKey.getKeyName() + " is DESTINATION");
 					parseTokenByType(TokenTypes.O_BRK, false);
 					// Integer index expression
 					ExpressionNode indexExpression = parseExpression(false); // Integer index expression parsed
@@ -752,17 +752,17 @@ public class Parser extends CompilerComponent {
 					parseTokenByType(TokenTypes.C_BRK, false);
 					// Set destination type
 					destination = new Destination(negate, idKey, indexExpression);
-					System.out.println("factor " + destination.getVariableName() + " array index expression: " + destination.getArrayIndexExpression());
+					//System.out.println("factor " + destination.getVariableName() + " array index expression: " + destination.getArrayIndexExpression());
 				}
-				System.out.println("DEST before analysis: " + (destination.getArrayIndexExpression() == null));
+				//System.out.println("DEST before analysis: " + (destination.getArrayIndexExpression() == null));
 				destination = getSemanticAnalyzer().lookupDestination(destination);
-				System.out.println("DEST after analysis: " + (destination.getArrayIndexExpression() == null));
+				//System.out.println("DEST after analysis: " + (destination.getArrayIndexExpression() == null));
 				return destination;
 			} else if(getLookaheadToken().getType() == TokenTypes.O_BRK) {
 				throw new SyntaxErrorException("'" + idKey.getKeyName() + "' is not an array.  Remove array index.");
 			} else { // Array item and no brackets: valid non-array destination definition
-				System.out.println("isArray = false");
-				System.out.println(idToken.getStr() + " no array index");
+				//System.out.println("isArray = false");
+				//System.out.println(idToken.getStr() + " no array index");
 				return getSemanticAnalyzer().lookupDestination(new Destination(negate, idKey)); // ID mistaken for an array
 			}
 		} else {
@@ -990,7 +990,7 @@ public class Parser extends CompilerComponent {
 		} else if(getLookaheadToken().getType() == TokenTypes.ID) {
 			Token idToken = nextToken();
 			Destination destination = parseDestination(false, idToken, isOutArg ? true : false);
-			System.out.println("parseFactor(), destination=" + destination);
+			//System.out.println("parseFactor(), destination=" + destination);
 			
 			return getSemanticAnalyzer().evaluateExpression(destination);
 		} else if(getLookaheadToken().getType() == TokenTypes.INTEGER ||

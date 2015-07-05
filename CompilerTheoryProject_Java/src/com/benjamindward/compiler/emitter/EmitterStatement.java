@@ -80,7 +80,7 @@ public class EmitterStatement {
 		
 		TokenTypes type = destination.getEvaluatedType();
 		
-		System.out.println(destination.getVariableName() + getIsIn(destination) + getIsParam(destination));
+		//System.out.println(destination.getVariableName() + getIsIn(destination) + getIsParam(destination));
 		
 		if(!getIsIn(destination) && getIsParam(destination)) {
 			addLine(true, passValueTemp + " = load " + Emitter.typeToLLVMDataType(false, type) + "** " + temp + ", align 4");
@@ -102,7 +102,7 @@ public class EmitterStatement {
 			}
 		}
 		
-		System.out.println("params null");
+		//System.out.println("params null");
 		
 		return false;
 	}
@@ -117,13 +117,13 @@ public class EmitterStatement {
 			}
 		}
 		
-		System.out.println("params null");
+		//System.out.println("params null");
 		
 		return false;
 	}
 	
 	protected Temporary getExprTempString(ExpressionNode expressionNode) throws Exception {
-		//System.out.println("ExprTempString");
+		////System.out.println("ExprTempString");
 		String exprTempString;
 		
 		boolean isNegate;

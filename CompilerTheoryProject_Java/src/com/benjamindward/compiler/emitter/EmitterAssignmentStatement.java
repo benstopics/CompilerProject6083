@@ -28,7 +28,7 @@ public class EmitterAssignmentStatement extends EmitterStatement {
 	public EmitterAssignmentStatement(EmitterStatementList statementList, AssignmentStatement assignmentStatement) throws Exception {
 		super(statementList);
 		
-		System.out.println(";assign " + getStatementList().getTempIndex());
+		//System.out.println(";assign " + getStatementList().getTempIndex());
 		
 		setAssignmentStatement(assignmentStatement);
 		
@@ -42,7 +42,7 @@ public class EmitterAssignmentStatement extends EmitterStatement {
 		
 		String targetTemp = destTempName;
 		
-		System.out.println(destTempName + " " + isParam);
+		//System.out.println(destTempName + " " + isParam);
 		
 		if(destination.ptrToArrayItem() && !isParam) {
 			String arrayIdxTemp = getExprTempString(destination.getArrayIndexExpression()).getName();
@@ -56,7 +56,7 @@ public class EmitterAssignmentStatement extends EmitterStatement {
 				targetTemp = tempIdx;
 			}
 			
-			System.out.println(";assign " + getStatementList().getTempIndex());
+			//System.out.println(";assign " + getStatementList().getTempIndex());
 		} else // Parser failed to prevent compiler error: arrays cannot be assigned
 			getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Parser did not prevent array without a specified index for assignment statement operand.");
 			

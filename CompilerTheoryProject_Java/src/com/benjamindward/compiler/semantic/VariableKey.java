@@ -23,7 +23,7 @@ public class VariableKey extends SymbolTableKey {
 
 	public void setArraySize(int arraySize) {
 		if(getKeyName().equals("result"))
-			System.out.println("VariableKey: RESULT ARRAY SIZE BEING ALTERED TO " + arraySize);
+			//System.out.println("VariableKey: RESULT ARRAY SIZE BEING ALTERED TO " + arraySize);
 		this.arraySize = arraySize;
 	}
 
@@ -69,10 +69,10 @@ public class VariableKey extends SymbolTableKey {
 		if(key.getKeyName().equals(getKeyName()) &&
 				getTypemark() == key.getTypemark() &&
 				getArraySize() == getArraySize()) {
-			//System.out.println(key.getKeyName() + " equals " + getKeyName() + " and " + key.getTypemark() + " equals " + getTypemark());
+			////System.out.println(key.getKeyName() + " equals " + getKeyName() + " and " + key.getTypemark() + " equals " + getTypemark());
 			return true;
 		} else {
-			//System.out.println(key.getKeyName() + " not equal to " + getKeyName() + " or " + key.getTypemark() + " not equal to " + getTypemark());
+			////System.out.println(key.getKeyName() + " not equal to " + getKeyName() + " or " + key.getTypemark() + " not equal to " + getTypemark());
 			return false;
 		}
 	}

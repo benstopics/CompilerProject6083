@@ -142,7 +142,7 @@ public class Lexer extends CompilerComponent {
 		char result = lookaheadChar; // Return lookahead
 		setLookaheadChar((char) reader.read()); // Consume next char
 		// Append char to buffer, or if newline char, flush buffer
-		//System.out.println((getLookaheadChar() == '\n' ? "newline" : getLookaheadChar()));
+		////System.out.println((getLookaheadChar() == '\n' ? "newline" : getLookaheadChar()));
 		// If \n, inc line number and reset char number to 1
 		if (result == '\n') { // Exclude \r lest double increment
 			lineNumber++;
@@ -479,9 +479,9 @@ public class Lexer extends CompilerComponent {
 				}
 			}
 			if(reserved) { // Could be either boolean or a reserved word in general
-				//System.out.println("IS RESERVED: " + token.getStr());
+				////System.out.println("IS RESERVED: " + token.getStr());
 				if(token.getStr().equals("true") || token.getStr().equals("false")) { // Boolean word
-					//System.out.println("SETTING TO BOOLEAN");
+					////System.out.println("SETTING TO BOOLEAN");
 					token.setType(Token.TokenTypes.BOOL);
 				} else // Reserved word in general
 					token.setType(Token.TokenTypes.RESERVED);
@@ -490,7 +490,7 @@ public class Lexer extends CompilerComponent {
 		// Trim quotes off of string token value
 		if(token.getType() == Token.TokenTypes.STR) {
 			token.setStr(token.getStr().substring(1, token.getStr().length()-1));
-			//System.out.println("Token is STRING: " + token.getStr());
+			////System.out.println("Token is STRING: " + token.getStr());
 		}
 		
 		// Debug output, print token

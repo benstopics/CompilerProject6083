@@ -15,7 +15,7 @@ public class ProcedureKey extends SymbolTableKey {
 	}
 
 	public void setInArgs(ArrayList<VariableKey> inArgs) {
-		System.out.println("ProcedureKey: get in parameters");
+		//System.out.println("ProcedureKey: get in parameters");
 		this.inArgs = inArgs;
 	}
 
@@ -24,17 +24,17 @@ public class ProcedureKey extends SymbolTableKey {
 	}
 
 	public void setOutArgs(ArrayList<VariableKey> outArgs) {
-		System.out.println("ProcedureKey: get out parameters");
+		//System.out.println("ProcedureKey: get out parameters");
 		this.outArgs = outArgs;
 	}
 
 	public ArrayList<Parameter> getParameters() {
-		System.out.println("ProcedureKey: get parameters");
+		//System.out.println("ProcedureKey: get parameters");
 		return parameters;
 	}
 
 	public void setParameters(ArrayList<Parameter> parameters) {
-		System.out.println("ProcedureKey: set parameters");
+		//System.out.println("ProcedureKey: set parameters");
 		this.parameters = parameters;
 		
 		ArrayList<VariableKey> inArgs = new ArrayList<VariableKey>();
@@ -61,10 +61,10 @@ public class ProcedureKey extends SymbolTableKey {
 		else {
 			for(int i = 0; i < parameters.size(); i++)
 				if(!parameters.get(i).equals(getParameters().get(i))) {
-					System.out.println(parameters.get(i).getKeyName() + " not equal to " + getParameters().get(i).getKeyName());
+					//System.out.println(parameters.get(i).getKeyName() + " not equal to " + getParameters().get(i).getKeyName());
 					return false; // Return false if discrepancy found
-				} else
-					System.out.println(parameters.get(i).getKeyName() + " equal to " + getParameters().get(i).getKeyName());
+				} //else
+					//System.out.println(parameters.get(i).getKeyName() + " equal to " + getParameters().get(i).getKeyName());
 			return true; // If no discrepancy found, return true
 		}
 	}

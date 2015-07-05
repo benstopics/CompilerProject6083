@@ -79,7 +79,6 @@ public class Compiler {
         setSemanticAnalyzer(new SemanticAnalyzer(this));
         setEmitter(new Emitter(this, outputFilePath));
         
-        System.out.println("Compiling '" + inputFilePath + "' ...");
     }
     
     public void setLexer(Lexer lexer) {
@@ -109,6 +108,6 @@ public class Compiler {
     }
     
     public static void debugOutput(String msg) {
-    	System.out.println(msg);
+    	////System.out.println(msg);
     }
 }

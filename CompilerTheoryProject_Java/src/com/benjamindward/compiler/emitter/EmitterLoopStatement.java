@@ -19,9 +19,9 @@ public class EmitterLoopStatement extends EmitterStatement {
 		addLine(true, "br i1 " + conditionalTemp + ", label %while.body" +  + loopIdx + ", label %while.end" + loopIdx);
 		addLine(true, "");
 		addLine(false, "while.body" + loopIdx + ":");
-		System.out.println(getStatementList().getTempIndex());
+		//System.out.println(getStatementList().getTempIndex());
 		getLines().addAll(new EmitterStatementList(getStatementList(), loopStatement.getStatements()).emit());
-		System.out.println(getStatementList().getTempIndex());
+		//System.out.println(getStatementList().getTempIndex());
 		addLine(true, "br label %while.cond" + loopIdx);
 		addLine(true, "");
 		addLine(false, "while.end" + loopIdx + ":");

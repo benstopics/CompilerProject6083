@@ -42,12 +42,12 @@ public class SemanticAnalyzer extends CompilerComponent {
 	
 	public void enterScope(boolean codeBlock) {
 		getRootSymbolTable().enterScope(codeBlock);
-		System.out.println("------------------------Entered scope");
+		//System.out.println("------------------------Entered scope");
 	}
 	
 	public void exitScope() {
 		getRootSymbolTable().exitScope();
-		System.out.println("------------------------Exited scope");
+		//System.out.println("------------------------Exited scope");
 	}
 	
 	public int getNextMetaID() {
@@ -79,11 +79,11 @@ public class SemanticAnalyzer extends CompilerComponent {
 	 */
 	public ProcedureKey declareProcedureKey(ProcedureKey procedure) throws SyntaxErrorException, IOException {
 		
-		System.out.println("Procedure Keyname: " + procedure.getKeyName());
+		//System.out.println("Procedure Keyname: " + procedure.getKeyName());
 		SymbolTableKey lookupKey = lookupInCurrentCodeBlock(procedure.getKeyName());
 		if(lookupKey != null) { // Procedure keyname found
-			//System.out.println(procedure.getKeyName() + " found");
-			//System.out.println("lookupKey name: " + lookupKey.getKeyName());
+			////System.out.println(procedure.getKeyName() + " found");
+			////System.out.println("lookupKey name: " + lookupKey.getKeyName());
 			if(lookupKey instanceof ProcedureKey) {
 				ProcedureKey lookupProcedureKey = (ProcedureKey) lookupKey;
 				if(procedure.equalArgumentList(lookupProcedureKey.getParameters())) {
@@ -94,7 +94,7 @@ public class SemanticAnalyzer extends CompilerComponent {
 			}
 		}
 				
-		//System.out.println(procedure.getKeyName() + " not found. Added procedure key.");
+		////System.out.println(procedure.getKeyName() + " not found. Added procedure key.");
 		procedure.setMetaKeyId(getNextMetaID());
 		getRootSymbolTable().getMostInnerScope().addKey(procedure); // Add procedure header outside the scope it enters in parser
 		
@@ -113,8 +113,8 @@ public class SemanticAnalyzer extends CompilerComponent {
 		
 		SymbolTableKey lookupKey = lookupInCurrentCodeBlock(variable.getKeyName());
 		if(lookupKey != null) { // Variable keyname found
-			//System.out.println(variable.getKeyName() + " found");
-			//System.out.println("lookupKey name: " + lookupKey.getKeyName());
+			////System.out.println(variable.getKeyName() + " found");
+			////System.out.println("lookupKey name: " + lookupKey.getKeyName());
 			if(lookupKey instanceof VariableKey) {
 				VariableKey lookupVarKey = (VariableKey) lookupKey;
 				if(variable.equals(lookupVarKey)) {
@@ -131,12 +131,12 @@ public class SemanticAnalyzer extends CompilerComponent {
 			} // If else, continue on
 		}
 		
-		//System.out.println(variable.getKeyName() + " not found. Added procedure key.");
+		////System.out.println(variable.getKeyName() + " not found. Added procedure key.");
 		variable.setMetaKeyId(getNextMetaID());
 		getRootSymbolTable().getMostInnerScope().addKey(variable); // Add procedure header outside the scope it enters in parser
 		
-		System.out.println("Variable " + variable + " (metaID: " + variable.getMetaKeyID() + " isParam: " + variable.isParam() + ") added to symbol table.");
-		//System.out.println(variable);
+		//System.out.println("Variable " + variable + " (metaID: " + variable.getMetaKeyID() + " isParam: " + variable.isParam() + ") added to symbol table.");
+		////System.out.println(variable);
 		return variableDeclaration; // Added to symbol table, give back
 	}
 	
@@ -170,14 +170,14 @@ public class SemanticAnalyzer extends CompilerComponent {
 		
 		SymbolTableKey lookupKey = lookupAllScopes(key.getKeyName());
 		if(lookupKey != null) { // Variable keyname found
-			//System.out.println(key.getKeyName() + " found");
-			//System.out.println("lookupKey name: " + lookupKey.getKeyName());
+			////System.out.println(key.getKeyName() + " found");
+			////System.out.println("lookupKey name: " + lookupKey.getKeyName());
 			if(lookupKey instanceof VariableKey) {
 				VariableKey lookupVarKey = (VariableKey) lookupKey;
 				key.setTypemark(lookupVarKey.getTypemark()); // Typemark found at least
 				if(key.equals(lookupVarKey)) { // Variable definition matched
 					destination.setTypemark(lookupVarKey.getTypemark()); // Assign typemark to destination
-					System.out.println("destination typemark now set to " + destination.getTypemark());
+					//System.out.println("destination typemark now set to " + destination.getTypemark());
 					return destination; // Variable checks out
 				} else {
 					if(!key.isArray() && lookupVarKey.isArray()) // Found variable expected index
@@ -201,20 +201,20 @@ public class SemanticAnalyzer extends CompilerComponent {
 		Destination destinationCast = null;
 		Expression expressionCast = null;
 		if(expressionNode instanceof Factor) {
-			System.out.println("evaluteExpression(): cast to factor");
+			//System.out.println("evaluteExpression(): cast to factor");
 			factorCast = (Factor) expressionNode;
 		} else if(expressionNode instanceof Destination) {
-			System.out.println("evaluteExpression(): cast to destination");
+			//System.out.println("evaluteExpression(): cast to destination");
 			destinationCast = (Destination) expressionNode;
 		} else if(expressionNode instanceof Expression) {
-			System.out.println("evaluteExpression(): cast to expression");
+			//System.out.println("evaluteExpression(): cast to expression");
 			expressionCast = (Expression) expressionNode;
 		}
 		
 		// Bitwise and boolean operators
 		if(expressionNode.getOperator() == TokenTypes.AND ||
 				expressionNode.getOperator() == TokenTypes.OR) {
-			System.out.println("evaluteExpression(): bitwise operators");
+			//System.out.println("evaluteExpression(): bitwise operators");
 			if(expressionNode.getOperandA().getEvaluatedType() == TokenTypes.BOOL || expressionNode.getOperandB().getEvaluatedType() == TokenTypes.BOOL) { // Conditional
 				expressionNode.setEvaluatedType(TokenTypes.BOOL);
 				return expressionNode;
@@ -231,7 +231,7 @@ public class SemanticAnalyzer extends CompilerComponent {
 				expressionNode.getOperator() == TokenTypes.LTEQ ||
 				expressionNode.getOperator() == TokenTypes.EQ ||
 				expressionNode.getOperator() == TokenTypes.NEQ) { // >= <= > < == !=
-			System.out.println("evaluteExpression(): boolean operators");
+			//System.out.println("evaluteExpression(): boolean operators");
 			if((expressionNode.getOperandA().isTypeRelational() && expressionNode.getOperandB().isTypeRelational()) || // Integer or boolean
 					(expressionNode.getOperandA().isEvaluatedTypeNumber() && expressionNode.getOperandB().isEvaluatedTypeNumber())) { // Integer or float
 				expressionNode.setEvaluatedType(TokenTypes.BOOL);
@@ -244,7 +244,7 @@ public class SemanticAnalyzer extends CompilerComponent {
 				expressionNode.getOperator() == TokenTypes.SUB ||
 				expressionNode.getOperator() == TokenTypes.MUL ||
 				expressionNode.getOperator() == TokenTypes.DIV) { // + - * /
-			System.out.println("evaluteExpression(): arithmetic operators");
+			//System.out.println("evaluteExpression(): arithmetic operators");
 			if(expressionNode.getOperandA().isEvaluatedTypeNumber() && expressionNode.getOperandB().isEvaluatedTypeNumber()) { // Integer or float
 				if(expressionNode.getOperandA().getEvaluatedType() == TokenTypes.FLOAT || expressionNode.getOperandB().getEvaluatedType() == TokenTypes.FLOAT)
 					expressionNode.setEvaluatedType(TokenTypes.FLOAT);
@@ -254,26 +254,26 @@ public class SemanticAnalyzer extends CompilerComponent {
 			} else // Boolean or string involved
 				throw new TypeCheckErrorException(expressionNode);
 		} else if(expressionCast != null) {
-			System.out.println("evaluteExpression(): evaluate expression");
+			//System.out.println("evaluteExpression(): evaluate expression");
 			if(expressionCast.isNot()) {
-				System.out.println("evaluteExpression(): not (expression)");
+				//System.out.println("evaluteExpression(): not (expression)");
 				if(expressionCast.getEvaluatedType() == TokenTypes.INTEGER ||
 						expressionCast.getEvaluatedType() == TokenTypes.BOOL) { // Not is only supported for integers (bitwise) and booleans (logical/conditional)
 					return expressionCast;
 				} else {
-					System.out.println("can't use it with NOT");
+					//System.out.println("can't use it with NOT");
 					throw new TypeCheckErrorException(expressionCast, TokenTypes.NOT);
 				}
 			} else {
-				System.out.println("evaluteExpression(): (expression)");
+				//System.out.println("evaluteExpression(): (expression)");
 				expressionNode.setEvaluatedType(expressionCast.getEvaluatedType());
 				return expressionCast; // No typecheck required
 			}
 		} else if(factorCast != null) {  // It's a factor but not an ID
-			System.out.println("evaluteExpression(): evaluate factor -> " + factorCast);
+			//System.out.println("evaluteExpression(): evaluate factor -> " + factorCast);
 			return factorCast;
 		} else if(destinationCast != null) {
-			System.out.println("evaluteExpression(): evaluate destination -> " + destinationCast);
+			//System.out.println("evaluteExpression(): evaluate destination -> " + destinationCast);
 			return destinationCast;
 		} else {
 			throw new Exception("Compiler error: evaluateExpression() returned null");

@@ -10,7 +10,7 @@ public class EmitterIfStatement extends EmitterStatement {
 	public EmitterIfStatement(EmitterStatementList statementList, IfStatement ifStatement, ArrayList<Parameter> params) throws Exception {
 		super(statementList);
 		
-		System.out.println(getStatementList().getTempIndex());
+		//System.out.println(getStatementList().getTempIndex());
 		
 		String conditionalTemp = getExprTempString(ifStatement.getConditional()).getName();
 		
