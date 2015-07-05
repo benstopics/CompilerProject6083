@@ -99,8 +99,6 @@ public class Emitter extends CompilerComponent {
 		mainLines.add("@.str_putint = private unnamed_addr constant [4 x i8] c\"%i\\0A\\00\", align 1");
 		mainLines.add("@.str_putfloat = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\", align 1");
 		mainLines.add("@.str_putstring = private unnamed_addr constant [4 x i8] c\"%s\\0A\\00\", align 1");
-		mainLines.add("@.str_booltrue = private unnamed_addr constant [5 x i8] c\"true\\00\", align 1");
-		mainLines.add("@.str_boolfalse = private unnamed_addr constant [6 x i8] c\"false\\00\", align 1");
 		mainLines.add("@.str_sscanfqualify = private unnamed_addr constant [21 x i8] c\"%[a-zA-Z0-9 _,;:.']\\0A\\00\", align 1");
 		mainLines.add("@_imp___iob = external global [0 x %struct._iobuf]*");
 		mainLines.add("");
@@ -150,15 +148,15 @@ public class Emitter extends CompilerComponent {
 		mainLines.add(tab + "%test.addr = alloca i1, align 4");
 		mainLines.add(tab + "store i1 %test, i1* %test.addr, align 4");
 		mainLines.add(tab + "%0 = load i1* %test.addr, align 4");
-		mainLines.add(tab + "%cmp = icmp ne i1 %0, 0");
-		mainLines.add(tab + "br i1 %cmp, label %print.true, label %print.false");
+		mainLines.add(tab + "%cmp = cmp ne i1 %0, 0");
+		mainLines.add(tab + "br i1 %cmp, label %lbool.true, label %lbool.false");
 		mainLines.add("");
 		mainLines.add("print.true:");
-		mainLines.add(tab + "%call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.str_booltrue, i32 0, i32 0))");
+		mainLines.add(tab + "%call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([63 x i8]* @.str_booltrue, i32 0, i32 0))");
 		mainLines.add(tab + "br label %if.end");
 		mainLines.add("");
 		mainLines.add("print.false:");
-		mainLines.add(tab + "%call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str_boolfalse, i32 0, i32 0))");
+		mainLines.add(tab + "%call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([63 x i8]* @.str_boolfalse, i32 0, i32 0))");
 		mainLines.add(tab + "br label %if.end");
 		mainLines.add("");
 		mainLines.add("if.end:");

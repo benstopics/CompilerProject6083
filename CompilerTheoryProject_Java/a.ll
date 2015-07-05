@@ -66,6 +66,8 @@ return.stmt:
 @.str_putint = private unnamed_addr constant [4 x i8] c"%i\0A\00", align 1
 @.str_putfloat = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
 @.str_putstring = private unnamed_addr constant [4 x i8] c"%s\0A\00", align 1
+@.str_booltrue = private unnamed_addr constant [5 x i8] c"true\00", align 1
+@.str_boolfalse = private unnamed_addr constant [6 x i8] c"false\00", align 1
 @.str_sscanfqualify = private unnamed_addr constant [21 x i8] c"%[a-zA-Z0-9 _,;:.']\0A\00", align 1
 @_imp___iob = external global [0 x %struct._iobuf]*
 
@@ -105,6 +107,26 @@ if.then:
   %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([63 x i8]* @.str0, i32 0, i32 0), i32 %2)
   call void @exit(i32 -1)
   unreachable
+
+if.end:
+  ret void
+}
+
+define void @putbool(i1 %test) {
+entry:
+  %test.addr = alloca i1, align 4
+  store i1 %test, i1* %test.addr, align 4
+  %0 = load i1* %test.addr, align 4
+  %cmp = icmp ne i1 %0, 0
+  br i1 %cmp, label %print.true, label %print.false
+
+print.true:
+  %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.str_booltrue, i32 0, i32 0))
+  br label %if.end
+
+print.false:
+  %call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str_boolfalse, i32 0, i32 0))
+  br label %if.end
 
 if.end:
   ret void
