@@ -75,7 +75,7 @@ public class ProcedureKey extends SymbolTableKey {
 			if(i < getParameters().size() - 1)
 				strParamList += getParameters().get(i);
 		}
-		return "procedure " + getKeyName() + "(" + strParamList + ")";
+		return getKeyName() + "(" + strParamList + ")";
 	}
 	
 	private void init(String name, int metaKeyID, ArrayList<Parameter> parameters) {

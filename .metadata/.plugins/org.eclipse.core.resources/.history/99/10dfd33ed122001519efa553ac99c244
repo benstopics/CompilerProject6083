@@ -39,6 +39,11 @@ public class ProcedureCall extends Statement {
 	}
 	
 	public String toString() {
-		return getProcedureKey().getKeyName() + "( ... )";
+		String strParamList = "";
+		for(int i = 0; i < getProcedureKey().getParameters().size(); i++) {
+			if(i < getProcedureKey().getParameters().size() - 1)
+				strParamList += getProcedureKey().getParameters().get(i);
+		}
+		return getProcedureKey().getKeyName() + "(" + strParamList + ")";
 	}
 }

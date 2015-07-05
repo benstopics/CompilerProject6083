@@ -37,8 +37,4 @@ public class ProcedureCall extends Statement {
 	public void setArguments(ArrayList<ExpressionNode> arguments) {
 		this.arguments = arguments;
 	}
-	
-	public String toString() {
-		return getProcedureKey().getKeyName() + "( ... )";
-	}
 }

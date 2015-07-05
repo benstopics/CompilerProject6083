@@ -39,6 +39,6 @@ public class ProcedureCall extends Statement {
 	}
 	
 	public String toString() {
-		return getProcedureKey().getKeyName() + "( ... )";
+		return "procedure " + getProcedureName() + "("
 	}
 }
