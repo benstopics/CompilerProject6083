@@ -22,7 +22,7 @@ public class VariableKey extends SymbolTableKey {
 	}
 
 	public void setArraySize(int arraySize) {
-		//if(getKeyName().equals("result"))
+		if(getKeyName().equals("result"))
 			//System.out.println("VariableKey: RESULT ARRAY SIZE BEING ALTERED TO " + arraySize);
 		this.arraySize = arraySize;
 	}

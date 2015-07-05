@@ -66,11 +66,11 @@ public class Destination extends ExpressionNode {
 		setNegate(negate);
 		this.varKey = variableKey;
 		
-		////System.out.println("Destination: isArray: " + isArray());
+		//System.out.println("Destination: isArray: " + isArray());
 		
 		setTypemark(variableKey.getTypemark());
 		
-		////System.out.println("class Destination: constructor -> " + toString());
+		//System.out.println("class Destination: constructor -> " + toString());
 	}
 	
 	public Destination(boolean negate, VariableKey variableKey, ExpressionNode arrayExpressionNode) {
@@ -80,7 +80,7 @@ public class Destination extends ExpressionNode {
 		setArrayIndexExpression(arrayExpressionNode);
 		this.varKey = variableKey;
 		
-		////System.out.println("Destination constructor: " + getVariableName() + " " + (getArrayIndexExpression() == null ? "null" : "has expression") + " " + isNegate()
+		//System.out.println("Destination constructor: " + getVariableName() + " " + (getArrayIndexExpression() == null ? "null" : "has expression") + " " + isNegate()
 				//+ " varIsArray=" + isArray() + " ptrToArrayItem=" + ptrToArrayItem());
 		
 		if(getArrayIndexExpression() != null)

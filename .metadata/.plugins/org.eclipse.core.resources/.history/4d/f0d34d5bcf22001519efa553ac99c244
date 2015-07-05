@@ -109,9 +109,10 @@ public class SemanticAnalyzer extends CompilerComponent {
 	 * @throws IOException
 	 */
 	public VariableDeclaration declareVariableKey(VariableDeclaration variableDeclaration) throws SyntaxErrorException, IOException {
+		System.out.println("Array size: " + variable.getArraySize());
 		VariableKey variable = variableDeclaration.getInfo();
 		
-		//System.out.println("Array size: " + variable.getArraySize());
+		System.out.println("Array size: " + variable.getArraySize());
 		
 		SymbolTableKey lookupKey = lookupInCurrentCodeBlock(variable.getKeyName());
 		if(lookupKey != null) { // Variable keyname found
@@ -133,7 +134,7 @@ public class SemanticAnalyzer extends CompilerComponent {
 			} // If else, continue on
 		}
 		
-		//System.out.println(variable.getKeyName() + " not found. Added procedure key. Is array? " + variable.isArray());
+		System.out.println(variable.getKeyName() + " not found. Added procedure key. Is array? " + variable.isArray());
 		variable.setMetaKeyId(getNextMetaID());
 		getRootSymbolTable().getMostInnerScope().addKey(variable); // Add procedure header outside the scope it enters in parser
 		

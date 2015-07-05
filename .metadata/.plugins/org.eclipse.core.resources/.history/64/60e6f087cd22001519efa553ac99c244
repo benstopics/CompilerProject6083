@@ -25,7 +25,7 @@ public class AssignmentStatement extends Statement {
 		setOperand(expressionNode);
 		
 		getChildren().add(destination);
-		////System.out.println("Assignment statement expressionNode: " + expressionNode);
+		//System.out.println("Assignment statement expressionNode: " + expressionNode);
 		getChildren().add(expressionNode);
 	}
 	

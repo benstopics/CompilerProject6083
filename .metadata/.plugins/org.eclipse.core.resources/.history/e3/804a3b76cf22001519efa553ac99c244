@@ -578,13 +578,10 @@ public class Parser extends CompilerComponent {
 			if(arraySize < 0)
 				throw new SyntaxErrorException("Array size must be 0 or greater.");
 			parseTokenByType(TokenTypes.C_BRK, false);
+			System.out.println(name + " array size is " + arraySize);
 		}
 		
-		//System.out.println(name + " array size is " + arraySize);
-		VariableDeclaration varDeclaration = new VariableDeclaration(name, isParam, typeMark, arraySize);
-		//System.out.println(name + " array size is " + varDeclaration.getArraySize());
-		
-		return getSemanticAnalyzer().declareVariableKey(varDeclaration);
+		return getSemanticAnalyzer().declareVariableKey(new VariableDeclaration(name, isParam, typeMark, arraySize));
 	}
 
 	/**

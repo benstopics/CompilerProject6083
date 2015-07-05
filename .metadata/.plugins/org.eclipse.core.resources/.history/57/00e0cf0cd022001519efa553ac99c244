@@ -37,8 +37,4 @@ public class LoopStatement extends Statement {
 		setConditional(conditional);
 		setStatements(statements);
 	}
-	
-	public String toString() {
-		return "for (...)";
-	}
 }

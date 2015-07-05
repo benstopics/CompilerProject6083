@@ -580,9 +580,9 @@ public class Parser extends CompilerComponent {
 			parseTokenByType(TokenTypes.C_BRK, false);
 		}
 		
-		//System.out.println(name + " array size is " + arraySize);
+		System.out.println(name + " array size is " + arraySize);
 		VariableDeclaration varDeclaration = new VariableDeclaration(name, isParam, typeMark, arraySize);
-		//System.out.println(name + " array size is " + varDeclaration.getArraySize());
+		System.out.println(name + " array size is " + varDeclaration.getArraySize());
 		
 		return getSemanticAnalyzer().declareVariableKey(varDeclaration);
 	}

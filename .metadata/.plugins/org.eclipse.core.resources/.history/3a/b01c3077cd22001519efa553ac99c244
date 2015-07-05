@@ -39,6 +39,6 @@ public class Program extends IRAbstractNode {
 	
 	public void print() {
 		super.print();
-		//System.out.println(); // Make sure cursor is not at end of last printed line (due to nature of printing algorithm)
+		System.out.println(); // Make sure cursor is not at end of last printed line (due to nature of printing algorithm)
 	}
 }

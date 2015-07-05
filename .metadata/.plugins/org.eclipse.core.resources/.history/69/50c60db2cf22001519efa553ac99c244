@@ -111,7 +111,7 @@ public class SemanticAnalyzer extends CompilerComponent {
 	public VariableDeclaration declareVariableKey(VariableDeclaration variableDeclaration) throws SyntaxErrorException, IOException {
 		VariableKey variable = variableDeclaration.getInfo();
 		
-		//System.out.println("Array size: " + variable.getArraySize());
+		System.out.println("Array size: " + variable.getArraySize());
 		
 		SymbolTableKey lookupKey = lookupInCurrentCodeBlock(variable.getKeyName());
 		if(lookupKey != null) { // Variable keyname found
