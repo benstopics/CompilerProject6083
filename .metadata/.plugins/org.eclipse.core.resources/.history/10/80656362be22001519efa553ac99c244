@@ -90,10 +90,10 @@ public class EmitterProcedureCall extends EmitterStatement {
 				} else {
 					destPtrTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
 				}
-				
-				addLine(true, sscanfTemp + " = call i32 (i8*, i8*, ...)* @sscanf(i8* " + fgetsTemp
-						+ ", i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* " + destPtrTemp + ")");
 			}
+			
+			addLine(true, sscanfTemp + " = call i32 (i8*, i8*, ...)* @sscanf(i8* " + fgetsTemp
+					+ ", i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* " + destPtrTemp + ")");
 		} else if(procedureCall.getProcedureName().equals("putbool")) {
 			
 		} else if(procedureCall.getProcedureName().equals("putinteger")) {

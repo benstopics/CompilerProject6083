@@ -78,10 +78,10 @@ public class EmitterProcedureCall extends EmitterStatement {
 				addLine(true, loadIOBufTemp + " = load [0 x %struct._iobuf]** @_imp___iob, align 4");
 				String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
 				addLine(true, arrayIdxTemp + " = getelementptr inbounds [0 x %struct._iobuf]* " + loadIOBufTemp + ", i32 0, i32 0");
-				fgetsTemp = "%call" + getStatementList().nextExprTempIndex();
+				String fgetsTemp = "%call" + getStatementList().nextExprTempIndex();
 				addLine(true, fgetsTemp + " = call i8* @fgets(i8* " + destPtrTemp + ", i32 100, %struct._iobuf* " + arrayIdxTemp + ")");
 				//addLine(true, "%4 = load i8** %newstr, align 4"); // destPtrTemp duplicate
-				sscanfTemp = "%call" + getStatementList().nextExprTempIndex();
+				String sscanfTemp = "%call" + getStatementList().nextExprTempIndex();
 				
 				// Second get destination ptr
 				if(dest.isArray()) {
@@ -90,10 +90,10 @@ public class EmitterProcedureCall extends EmitterStatement {
 				} else {
 					destPtrTemp = loadTempValueAtPtr("%_" + dest.getMetaKeyID() + dest.getVariableName(), dest);
 				}
-				
-				addLine(true, sscanfTemp + " = call i32 (i8*, i8*, ...)* @sscanf(i8* " + fgetsTemp
-						+ ", i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* " + destPtrTemp + ")");
 			}
+			
+			addLine(true, sscanfTemp + " = call i32 (i8*, i8*, ...)* @sscanf(i8* " + fgetsTemp
+					+ ", i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* " + destPtrTemp + ")");
 		} else if(procedureCall.getProcedureName().equals("putbool")) {
 			
 		} else if(procedureCall.getProcedureName().equals("putinteger")) {

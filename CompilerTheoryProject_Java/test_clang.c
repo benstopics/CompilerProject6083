@@ -40,6 +40,12 @@ void teststrarrayptr(char *svars[]) {
 	printf("%s\n", svars[1]);
 }
 
+void testgetstr(char *getstr) {
+	getstr = (char *) malloc(100);
+	sscanf(fgets(getstr, sizeof(char) * 100, stdin), "%[a-zA-Z0-9 _,;:.']\n", getstr);
+	printf("%s\n", getstr);
+}
+
 int main () {
 	/*int x[1] = { 0 };
 	struct ArrWrapper arr;
@@ -120,6 +126,9 @@ int main () {
 	
 	char *newstr = (char *) malloc(100);
 	sscanf(fgets(newstr, sizeof(char) * 100, stdin), "%[a-zA-Z0-9 _,;:.']\n", newstr);
+	printf("%s\n", newstr);
+	
+	testgetstr(newstr);
 	printf("%s\n", newstr);
 	
 	/*char *true = "true";

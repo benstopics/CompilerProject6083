@@ -48,17 +48,6 @@ entry:
   %_15getstr = alloca i8**, align 4
   store i8** %_15getstr.p, i8*** %_15getstr, align 4
   %call0 = call i8* @malloc(i32 100)
-  %0 = load i8*** %_15getstr, align 4
-  %1 = load i8** %0, align 4
-  store i8* %call0, i8** %1, align 4
-  %2 = load i8*** %_15getstr, align 4
-  %3 = load i8** %2, align 4
-  %4 = load [0 x %struct._iobuf]** @_imp___iob, align 4
-  %arrayidx1 = getelementptr inbounds [0 x %struct._iobuf]* %4, i32 0, i32 0
-  %call2 = call i8* @fgets(i8* %3, i32 100, %struct._iobuf* %arrayidx1)
-  %5 = load i8*** %_15getstr, align 4
-  %6 = load i8** %5, align 4
-  %call3 = call i32 (i8*, i8*, ...)* @sscanf(i8* %call2, i8* getelementptr inbounds ([21 x i8]* @.str_sscanfqualify, i32 0, i32 0), i8* %6)
 
 
   br label %return.stmt

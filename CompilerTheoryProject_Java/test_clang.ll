@@ -86,6 +86,24 @@ declare i32 @sscanf(i8*, i8*, ...) #1
 declare i8* @fgets(i8*, i32, %struct._iobuf*) #1
 
 ; Function Attrs: nounwind
+define void @testgetstr(i8* %getstr) #0 {
+entry:
+  %getstr.addr = alloca i8*, align 4
+  store i8* %getstr, i8** %getstr.addr, align 4
+  %call = call i8* @malloc(i32 100)
+  store i8* %call, i8** %getstr.addr, align 4
+  %0 = load i8** %getstr.addr, align 4
+  %1 = load [0 x %struct._iobuf]** @_imp___iob, align 4
+  %arrayidx = getelementptr inbounds [0 x %struct._iobuf]* %1, i32 0, i32 0
+  %call1 = call i8* @fgets(i8* %0, i32 100, %struct._iobuf* %arrayidx)
+  %2 = load i8** %getstr.addr, align 4
+  %call2 = call i32 (i8*, i8*, ...)* @sscanf(i8* %call1, i8* getelementptr inbounds ([21 x i8]* @.str1, i32 0, i32 0), i8* %2)
+  %3 = load i8** %getstr.addr, align 4
+  %call3 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* %3)
+  ret void
+}
+
+; Function Attrs: nounwind
 define i32 @main() #0 {
 entry:
   %retval = alloca i32, align 4
@@ -112,6 +130,10 @@ entry:
   %call4 = call i32 (i8*, i8*, ...)* @sscanf(i8* %call3, i8* getelementptr inbounds ([21 x i8]* @.str1, i32 0, i32 0), i8* %4)
   %5 = load i8** %newstr, align 4
   %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* %5)
+  %6 = load i8** %newstr, align 4
+  call void @testgetstr(i8* %6)
+  %7 = load i8** %newstr, align 4
+  %call6 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i32 0, i32 0), i8* %7)
   ret i32 0
 }
 
