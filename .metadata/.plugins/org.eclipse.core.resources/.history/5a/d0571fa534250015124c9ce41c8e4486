@@ -1,0 +1,303 @@
+package com.benjamindward.compiler.emitter;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+import com.benjamindward.compiler.CompilerComponent;
+import com.benjamindward.compiler.Compiler;
+import com.benjamindward.compiler.errorhandler.ErrorHandler.SyntaxErrorException;
+import com.benjamindward.compiler.lexer.Token.TokenTypes;
+import com.benjamindward.compiler.semantic.VariableKey;
+import com.benjamindward.compiler.semantic.abstractclasses.*;
+
+public class Emitter extends CompilerComponent {
+	private int nextMetaID;
+	private int stringConstantIndex = 0;
+	private String outputFilePath;
+	private PrintWriter writer;
+	private ArrayList<StringConstant> stringConstants = new ArrayList<StringConstant>();
+
+	public ArrayList<StringConstant> getStringConstants() {
+		return stringConstants;
+	}
+
+	public void setStringConstants(ArrayList<StringConstant> stringConstants) {
+		this.stringConstants = stringConstants;
+	}
+	
+	public int nextStringConstantIndex() {
+		return stringConstantIndex++;
+	}
+	
+	public String getOutputFilePath() {
+		return outputFilePath;
+	}
+
+	public void setOutputFilePath(String outputFilePath) {
+		this.outputFilePath = outputFilePath;
+	}
+
+	public static String execCmd(String cmd) throws java.io.IOException {
+		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", cmd);
+        builder.redirectErrorStream(true);
+        Process p = builder.start();
+        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String output = "";
+        while (true) {
+            String line = r.readLine();
+            if (line == null) { break; }
+            output += line + "\n";
+        }
+        return output;
+    }
+	
+	public Emitter(Compiler compiler, String outputFilePath) {
+		super(compiler);
+		
+		setOutputFilePath(outputFilePath);
+	}
+	
+	public int getNextMetaID() {
+		return nextMetaID += 1;
+	}
+	
+	public static String typeToLLVMDataType(boolean passByPtr, TokenTypes type) throws SyntaxErrorException {
+		String append = passByPtr ? "*" : "";
+		if(type == TokenTypes.BOOL) {
+			return "i1" + append;
+		} else if(type == TokenTypes.INTEGER) {
+			return "i32" + append;
+		} else if(type == TokenTypes.FLOAT) {
+			return "float" + append;
+		} else if(type == TokenTypes.STR) {
+			return "i8*" + append;
+		} else
+			throw new SyntaxErrorException("Compiler error: variable declaration typemark was not a valid typemark.");
+	}
+	
+	public static final String tab = "  ";
+	public void output(ArrayList<String> codeLines) {
+		for(String line : codeLines)
+			writer.println(line);
+	}
+	
+	public void emitProgram(Program program) throws Exception {
+		this.writer = new PrintWriter(getOutputFilePath(), "UTF-8");
+		
+		ArrayList<String> mainLines = new ArrayList<String>();
+		
+		int runtimeErrorTempIdx = nextStringConstantIndex();
+		mainLines.add("@.str" + runtimeErrorTempIdx + " = private unnamed_addr constant [63 x i8] c\"Runtime error -> Attempted to convert integer '%d' to boolean.\\00\", align 1");
+		mainLines.add("@.str_empty = private unnamed_addr constant [1 x i8] c\"\\00\", align 1");
+		mainLines.add("@.str_getbool = private unnamed_addr constant [3 x i8] c\"%i\\00\", align 1");
+		mainLines.add("@.str_getint = private unnamed_addr constant [3 x i8] c\"%i\\00\", align 1");
+		mainLines.add("@.str_getfloat = private unnamed_addr constant [3 x i8] c\"%f\\00\", align 1");
+		mainLines.add("@.str_getstring = private unnamed_addr constant [3 x i8] c\"%s\\00\", align 1");
+		mainLines.add("@.str_putbool = private unnamed_addr constant [4 x i8] c\"%i\\0A\\00\", align 1");
+		mainLines.add("@.str_putint = private unnamed_addr constant [4 x i8] c\"%i\\0A\\00\", align 1");
+		mainLines.add("@.str_putfloat = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\", align 1");
+		mainLines.add("@.str_putstring = private unnamed_addr constant [4 x i8] c\"%s\\0A\\00\", align 1");
+		mainLines.add("@.str_booltrue = private unnamed_addr constant [6 x i8] c\"true\\0A\\00\", align 1");
+		mainLines.add("@.str_boolfalse = private unnamed_addr constant [7 x i8] c\"false\\0A\\00\", align 1");
+		mainLines.add("@.str_sscanfqualify = private unnamed_addr constant [21 x i8] c\"%[a-zA-Z0-9 _,;:.']\\0A\\00\", align 1");
+		mainLines.add("@_imp___iob = external global [0 x %struct._iobuf]*");
+		mainLines.add("");
+		mainLines.add("declare i8* @malloc(i32)");
+		mainLines.add("");
+		mainLines.add("declare i8* @strcpy(i8*, i8*)");
+		mainLines.add("");
+		mainLines.add("declare i32 @scanf(i8*, ...)");
+		mainLines.add("");
+		mainLines.add("declare i8* @gets(i8*)");
+		mainLines.add("");
+		mainLines.add("declare i32 @sscanf(i8*, i8*, ...)");
+		mainLines.add("");
+		mainLines.add("%struct._iobuf = type { i8*, i32, i8*, i32, i32, i32, i32, i8* }");
+		mainLines.add("");
+		mainLines.add("declare i8* @fgets(i8*, i32, %struct._iobuf*)");
+		mainLines.add("");
+		mainLines.add("declare i32 @printf(i8*, ...)");
+		mainLines.add("");
+		mainLines.add("declare void @exit(i32)");
+		mainLines.add("");
+		mainLines.add("define void @check_int_to_bool(i32 %test) {");
+		mainLines.add("entry:");
+		mainLines.add(tab + "%test.addr = alloca i32, align 4");
+		mainLines.add(tab + "store i32 %test, i32* %test.addr, align 4");
+		mainLines.add(tab + "%0 = load i32* %test.addr, align 4");
+		mainLines.add(tab + "%cmp = icmp ne i32 %0, 0");
+		mainLines.add(tab + "br i1 %cmp, label %land.lhs.true, label %if.end");
+		mainLines.add("");
+		mainLines.add("land.lhs.true:");
+		mainLines.add(tab + "%1 = load i32* %test.addr, align 4");
+		mainLines.add(tab + "%cmp1 = icmp ne i32 %1, 1");
+		mainLines.add(tab + "br i1 %cmp1, label %if.then, label %if.end");
+		mainLines.add("");
+		mainLines.add("if.then:");
+		mainLines.add(tab + "%2 = load i32* %test.addr, align 4");
+		mainLines.add(tab + "%call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([63 x i8]* @.str" + runtimeErrorTempIdx + ", i32 0, i32 0), i32 %2)");
+		mainLines.add(tab + "call void @exit(i32 -1)");
+		mainLines.add(tab + "unreachable");
+		mainLines.add("");
+		mainLines.add("if.end:");
+		mainLines.add(tab + "ret void");
+		mainLines.add("}");
+		mainLines.add("");
+		mainLines.add("define void @putbool(i1 %test) {");
+		mainLines.add("entry:");
+		mainLines.add(tab + "%test.addr = alloca i1, align 4");
+		mainLines.add(tab + "store i1 %test, i1* %test.addr, align 4");
+		mainLines.add(tab + "%0 = load i1* %test.addr, align 4");
+		mainLines.add(tab + "%cmp = icmp ne i1 %0, 0");
+		mainLines.add(tab + "br i1 %cmp, label %print.true, label %print.false");
+		mainLines.add("");
+		mainLines.add("print.true:");
+		mainLines.add(tab + "%call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str_booltrue, i32 0, i32 0))");
+		mainLines.add(tab + "br label %if.end");
+		mainLines.add("");
+		mainLines.add("print.false:");
+		mainLines.add(tab + "%call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str_boolfalse, i32 0, i32 0))");
+		mainLines.add(tab + "br label %if.end");
+		mainLines.add("");
+		mainLines.add("if.end:");
+		mainLines.add(tab + "ret void");
+		mainLines.add("}");
+		mainLines.add("");
+		mainLines.add("define i32 @main() {");
+		mainLines.add(tab + "entry:");
+		
+		mainLines.addAll(emitProgramBody(program.getBody()));
+		
+		mainLines.add(tab + "ret i32 0");
+		mainLines.add("}");
+		mainLines.add("");
+		
+		for(StringConstant stringConstant : getStringConstants()) {
+			mainLines.add("@.str" + stringConstant.getIndex() + " = private unnamed_addr constant ["
+					+ stringConstant.getCharCount() + " x i8] c\"" + stringConstant.getValue() + "\", align 1");
+		}
+		
+		output(mainLines);
+		
+		writer.close();
+	}
+	
+	private ArrayList<String> emitProgramBody(ProgramBody programBody) throws Exception {
+		ArrayList<String> programBodyLines = new ArrayList<String>();
+		programBodyLines.addAll(emitDeclarationList(programBody.getDeclarations(), false));
+		programBodyLines.addAll(new EmitterStatementList(this, programBody.getStatements()).emit());
+		return programBodyLines;
+	}
+	
+	private ArrayList<String> emitDeclarationList(ArrayList<Declaration> declarations, boolean passByPtr) throws Exception {
+		ArrayList<String> declarationsLines = new ArrayList<String>();
+		for(Declaration declaration : declarations) {
+			declarationsLines.add(emitDeclaration(declaration, passByPtr));
+		}
+		return declarationsLines;
+	}
+	
+	private String emitDeclaration(Declaration declaration, boolean outParameter) throws Exception {
+		if(declaration instanceof VariableDeclaration) { // Variable declaration
+			VariableDeclaration variable = (VariableDeclaration) declaration;
+			
+			// If variable, configure allocation line and return it
+			
+			// Translate datatype
+			String type = typeToLLVMDataType(false, variable.getTypeMark());
+			
+			// Translate arrays
+			String strDataType = type;
+			if(variable.isArray()) {
+				if(variable.getTypeMark() == TokenTypes.STR)
+					strDataType = type + "*";
+				else
+					strDataType = "[" + variable.getArraySize() + " x " + strDataType + "]";
+			}
+			
+			type += outParameter ? "*" : "";
+			
+			String retLine = "";
+			
+			String tempName = "%_" + variable.getInfo().getMetaKeyID() + variable.getVariableName();
+			
+			if(outParameter) {
+				retLine += tab + tempName + ".p = alloca " + strDataType + ", align 4";
+				retLine += "\n" + tab + tempName + " = alloca " + type + ", align 4";
+				retLine += "\n" + tab + "store " + type + " " + tempName
+						+ ".p, " + type + "* " + tempName + ", align 4";
+			} else {
+				retLine += tab + tempName + " = alloca " + strDataType + ", align 4";
+				/*if((variable.getTypeMark() == TokenTypes.INTEGER || variable.getTypeMark() == TokenTypes.BOOL || variable.getTypeMark() == TokenTypes.FLOAT) &&
+						!variable.isArray()) {
+					retLine += "\n" + tab + "store " + strDataType + " 0, " + strDataType + "* " + tempName + ", align 4";
+				} else */if(variable.getTypeMark() == TokenTypes.STR) {
+					retLine += "store i8* getelementptr inbounds ([1 x i8]* @.str_empty, i32 0, i32 0), i8** " + tempName + ", align 4";
+				}
+			}
+			
+			return retLine;
+			
+		} else if(declaration instanceof Procedure) { // Procedure declaration
+			Procedure procedure = (Procedure) declaration;
+			
+			// === HEADER ===
+			
+			// Return struct, if there needs to be one
+			ArrayList<String> procedureLines = new ArrayList<String>();
+			String procedureName = "_" + procedure.getMetaKeyID() + procedure.getProcedureKey().getKeyName();
+			
+			// HEADER
+			String procedureHeaderLine = "define void @" + procedureName + "(";
+			if(procedure.getProcedureKey().getParameters().size() > 0) {
+				for(Parameter parameter : procedure.getProcedureKey().getParameters()) {
+					String type = typeToLLVMDataType(false, parameter.getTypemark());
+					String tempName = "%_" + parameter.getMetaKeyID() + parameter.getKeyName() + ".p";
+					if(!parameter.isIn())
+						type += "*";
+					procedureHeaderLine += type + " " + tempName + ", ";
+				}
+				procedureHeaderLine = procedureHeaderLine.substring(0, procedureHeaderLine.length()-2) + ") {";
+			} else {
+				procedureHeaderLine += ") {";
+			}
+			procedureLines.add(procedureHeaderLine);
+			procedureLines.add("entry:");
+			
+			// Setup addressed
+			// Also, emit procedure declaration list / customized declaration list that considers in/out attribute
+			for(Parameter parameter : procedure.getProcedureKey().getParameters()) {
+				String type = typeToLLVMDataType(false, parameter.getTypemark());
+				String tempName = "%_" + parameter.getMetaKeyID() + parameter.getKeyName();
+				if(!parameter.isIn()) { // Out
+					type += "*";
+				}
+				procedureLines.add(tab + tempName + " = alloca " + type + ", align 4");
+				procedureLines.add(tab + "store " + type + " " + tempName + ".p, " + type + "* " + tempName + ", align 4");
+			}
+			// Add declarations lines
+			procedureLines.addAll(emitDeclarationList(procedure.getDeclarations(), false);
+			
+			// PROCEDURE BODY
+			EmitterStatementList statementList = new EmitterStatementList(this, procedure.getStatements(), procedure.getProcedureKey().getParameters());
+			procedureLines.addAll(statementList.emit());
+			
+			procedureLines.add("");
+			procedureLines.add(tab + "br label %return.stmt");
+			procedureLines.add("");
+			procedureLines.add("return.stmt:");
+			procedureLines.add(tab + "ret void");
+			procedureLines.add("}");
+			procedureLines.add("");
+			
+			output(procedureLines);
+			
+			return "";
+		} else {
+			getCompiler().getErrorHandler().compilerError("Compiler error: extension of Declaration was neither VariableDeclaration nor Procedure.");
+			return null;
+		}
+	}
+}

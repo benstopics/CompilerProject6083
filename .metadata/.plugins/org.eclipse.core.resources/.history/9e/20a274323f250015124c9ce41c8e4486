@@ -1,0 +1,65 @@
+package com.benjamindward.compiler.emitter;
+
+import java.util.ArrayList;
+
+import com.benjamindward.compiler.errorhandler.ErrorHandler.SyntaxErrorException;
+import com.benjamindward.compiler.lexer.Token;
+import com.benjamindward.compiler.lexer.Token.TokenTypes;
+import com.benjamindward.compiler.semantic.abstractclasses.AssignmentStatement;
+import com.benjamindward.compiler.semantic.abstractclasses.Destination;
+import com.benjamindward.compiler.semantic.abstractclasses.Expression;
+import com.benjamindward.compiler.semantic.abstractclasses.ExpressionNode;
+import com.benjamindward.compiler.semantic.abstractclasses.Factor;
+import com.benjamindward.compiler.semantic.abstractclasses.Parameter;
+import com.benjamindward.compiler.semantic.abstractclasses.Statement;
+
+public class EmitterAssignmentStatement extends EmitterStatement {
+	private AssignmentStatement assignmentStatement;
+
+	public AssignmentStatement getAssignmentStatement() {
+		return assignmentStatement;
+	}
+
+	public void setAssignmentStatement(
+			AssignmentStatement assignmentStatement) {
+		this.assignmentStatement = assignmentStatement;
+	}
+	
+	public EmitterAssignmentStatement(EmitterStatementList statementList, AssignmentStatement assignmentStatement) throws Exception {
+		super(statementList);
+		
+		//System.out.println(";assign " + getStatementList().getTempIndex());
+		
+		setAssignmentStatement(assignmentStatement);
+		
+		Destination destination = getAssignmentStatement().getDestination();
+		boolean isParam = getIsParam(destination);
+		String destTempName = "%_" + destination.getMetaKeyID() + destination.getVariableName();
+		String typeStr = Emitter.typeToLLVMDataType(false, destination.getEvaluatedType());
+		
+		Temporary operand = getExprTempString(getAssignmentStatement().getOperand());
+		String operandTemp = operand.getName();
+		
+		String targetTemp = destTempName;
+		
+		//System.out.println(destTempName + " " + isParam);
+		
+		if(destination.ptrToArrayItem() && !isParam) {
+			String arrayIdxTemp = getExprTempString(destination.getArrayIndexExpression()).getName();
+			String itemPtrTemp = loadTempArrayItemPtr(destination, arrayIdxTemp);
+			
+			targetTemp = itemPtrTemp;
+		} else if(!destination.isArray()) { // Must be single variable
+			if(isParam) {
+				String tempIdx = "%" + getStatementList().nextTempIndex();
+				addLine(true, tempIdx + " = load " + typeStr + (isParam ? "*" : "") + "* " + destTempName + ", align 4");
+				targetTemp = tempIdx;
+			}
+			
+			//System.out.println(";assign " + getStatementList().getTempIndex());
+		} else // Parser failed to prevent compiler error: arrays cannot be assigned
+			getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Parser did not prevent array without a specified index for assignment statement operand.");
+			
+		addLine(true, "store " + typeStr + " " + operandTemp + ", " + typeStr + "* " + targetTemp + ", align 4");
+	}
+}

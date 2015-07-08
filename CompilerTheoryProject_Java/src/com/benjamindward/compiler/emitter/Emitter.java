@@ -199,7 +199,7 @@ public class Emitter extends CompilerComponent {
 		return declarationsLines;
 	}
 	
-	private String emitDeclaration(Declaration declaration, boolean passByPtr) throws Exception {
+	private String emitDeclaration(Declaration declaration, boolean outParameter) throws Exception {
 		if(declaration instanceof VariableDeclaration) { // Variable declaration
 			VariableDeclaration variable = (VariableDeclaration) declaration;
 			
@@ -211,31 +211,25 @@ public class Emitter extends CompilerComponent {
 			// Translate arrays
 			String strDataType = type;
 			if(variable.isArray()) {
-				if(variable.getTypeMark() == TokenTypes.STR)
-					strDataType = type + "*";
-				else
-					strDataType = "[" + variable.getArraySize() + " x " + strDataType + "]";
+				strDataType = "[" + variable.getArraySize() + " x " + strDataType + "]";
 			}
 			
-			type += passByPtr ? "*" : "";
+			type += outParameter ? "*" : "";
 			
 			String retLine = "";
 			
 			String tempName = "%_" + variable.getInfo().getMetaKeyID() + variable.getVariableName();
 			
-			if(passByPtr) {
+			if(outParameter) {
 				retLine += tab + tempName + ".p = alloca " + strDataType + ", align 4";
 				retLine += "\n" + tab + tempName + " = alloca " + type + ", align 4";
 				retLine += "\n" + tab + "store " + type + " " + tempName
 						+ ".p, " + type + "* " + tempName + ", align 4";
 			} else {
 				retLine += tab + tempName + " = alloca " + strDataType + ", align 4";
-				/*if((variable.getTypeMark() == TokenTypes.INTEGER || variable.getTypeMark() == TokenTypes.BOOL || variable.getTypeMark() == TokenTypes.FLOAT) &&
-						!variable.isArray()) {
-					retLine += "\n" + tab + "store " + strDataType + " 0, " + strDataType + "* " + tempName + ", align 4";
-				} else */if(variable.getTypeMark() == TokenTypes.STR) {
+				/*if(variable.getTypeMark() == TokenTypes.STR) {
 					retLine += "store i8* getelementptr inbounds ([1 x i8]* @.str_empty, i32 0, i32 0), i8** " + tempName + ", align 4";
-				}
+				}*/
 			}
 			
 			return retLine;
@@ -267,17 +261,19 @@ public class Emitter extends CompilerComponent {
 			procedureLines.add("entry:");
 			
 			// Setup addressed
+			// Also, emit procedure declaration list / customized declaration list that considers in/out attribute
 			for(Parameter parameter : procedure.getProcedureKey().getParameters()) {
 				String type = typeToLLVMDataType(false, parameter.getTypemark());
 				String tempName = "%_" + parameter.getMetaKeyID() + parameter.getKeyName();
-				if(!parameter.isIn())
+				if(!parameter.isIn()) { // Out
 					type += "*";
+				}
 				procedureLines.add(tab + tempName + " = alloca " + type + ", align 4");
-				procedureLines.add(tab + "store " + type + " " + tempName + ".p, " + type + "* " + tempName + ", align 4");
+				if(!parameter.isIn())
+					procedureLines.add(tab + "store " + type + " " + tempName + ".p, " + type + "* " + tempName + ", align 4");
 			}
-			
-			// Emit declaration list
-			procedureLines.addAll(emitDeclarationList(procedure.getDeclarations(), true));
+			// Add declarations lines
+			procedureLines.addAll(emitDeclarationList(procedure.getDeclarations(), false));
 			
 			// PROCEDURE BODY
 			EmitterStatementList statementList = new EmitterStatementList(this, procedure.getStatements(), procedure.getProcedureKey().getParameters());

@@ -1,0 +1,25 @@
+program fibb is
+    global integer a;
+	global integer b;
+    global procedure fibb (integer x out, integer y out)
+		integer z;
+    begin
+        z := x + y;
+		//putInteger(z);
+		x := y;
+		//putInteger(x);
+		y := z;
+		//putInteger(y);
+    end procedure;
+	
+	global integer i;
+begin
+	a := 0;
+	b := 1;
+	for(i := 0; i < 30)
+		fibb(a, b);
+		putInteger(b);
+		i := i + 1;
+	end for;
+    
+end program

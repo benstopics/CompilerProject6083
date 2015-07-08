@@ -1,2 +1,0 @@
-#!/bin/bash
-clang test_clang.c -Oz -s -m32 -fno-stack-protector -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-math-errno -fno-unroll-loops -fmerge-all-constants -Wall -nostartfiles

@@ -1,5 +1,0 @@
-[X] check if code is never reached due to return statements
-
-[X] Flags to print Token stream and/or final AST
-
-[X] Advanced error reporting

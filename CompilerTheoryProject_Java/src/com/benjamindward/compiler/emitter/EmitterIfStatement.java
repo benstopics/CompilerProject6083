@@ -12,11 +12,11 @@ public class EmitterIfStatement extends EmitterStatement {
 		
 		//System.out.println(getStatementList().getTempIndex());
 		
-		String conditionalTemp = getExprTempString(ifStatement.getConditional()).getName();
-		
+		String cmpTemp = getExprTempString(ifStatement.getConditional()).getName();
+		//System.out.println("Conditional temp: " + conditionalTemp);
 		int ifIdx = getStatementList().nextExprTempIndex();
-		String cmpTemp = "%" + getStatementList().nextTempIndex();
-		addLine(true, cmpTemp + " = load i1* " + conditionalTemp);
+		//String cmpTemp = "%" + getStatementList().nextTempIndex();
+		//addLine(true, cmpTemp + " = load i1* " + conditionalTemp);
 		addLine(true, "br i1 " + cmpTemp + ", label %if.then" + ifIdx + ", label %if.else" + ifIdx);
 		addLine(true, "");
 		addLine(false, "if.then" + ifIdx + ":");

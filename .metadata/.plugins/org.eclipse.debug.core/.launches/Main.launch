@@ -7,5 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.benjamindward.compiler.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-s &quot;final_programs\arrays_and_loops.src&quot; -show-ast"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="CompilerTheoryProject_Java"/>
 </launchConfiguration>

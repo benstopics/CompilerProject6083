@@ -132,6 +132,12 @@ public class EmitterProcedureCall extends EmitterStatement {
 			} else
 				throw new SyntaxErrorException("Compiler error: putString() argument neither instance of destination nor factor");
 			
+			if(dest.isArray()) {
+				String idxTemp = "%" + getStatementList().nextTempIndex();
+				addLine(true, idxTemp + " = load i8** " + valueTemp + ", align 4");
+				valueTemp = idxTemp;
+			}
+			
 			addLine(true, "%call" + getStatementList().nextExprTempIndex()
 					+ " = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str_putstring, i32 0, i32 0), i8* "
 					+ valueTemp + ")");

@@ -1,0 +1,365 @@
+package com.benjamindward.compiler.emitter;
+
+import java.util.ArrayList;
+
+import com.benjamindward.compiler.errorhandler.ErrorHandler.SyntaxErrorException;
+import com.benjamindward.compiler.lexer.Token;
+import com.benjamindward.compiler.lexer.Token.TokenTypes;
+import com.benjamindward.compiler.semantic.abstractclasses.Destination;
+import com.benjamindward.compiler.semantic.abstractclasses.Expression;
+import com.benjamindward.compiler.semantic.abstractclasses.ExpressionNode;
+import com.benjamindward.compiler.semantic.abstractclasses.Factor;
+import com.benjamindward.compiler.semantic.abstractclasses.Parameter;
+
+public class EmitterStatement {
+	public EmitterStatement(EmitterStatementList statementList) {
+		setStatementList(statementList);
+	}
+	
+	public ArrayList<Parameter> getParams() {
+		return getStatementList().getProcedureParams();
+	}
+	
+	private EmitterStatementList statementList;
+	private ArrayList<String> lines = new ArrayList<String>();
+	
+	public void addLine(boolean tab, String line) {
+		if(tab) {
+			getLines().add(Emitter.tab + line);
+		} else {
+			getLines().add(line);
+		}
+	}
+
+	protected EmitterStatementList getStatementList() {
+		return statementList;
+	}
+
+	protected void setStatementList(EmitterStatementList statementList) {
+		this.statementList = statementList;
+	}
+
+	protected ArrayList<String> getLines() {
+		return lines;
+	}
+
+	protected void setLines(ArrayList<String> lines) {
+		this.lines = lines;
+	}
+	
+	public String emit() {
+		String result = "";
+		for(int i=0;i < getLines().size(); i++) {
+			result += getLines().get(i);
+			if(i < getLines().size()-1)
+				result += "\n";
+		}
+		return result;
+	}
+	
+	public String loadTempArrayItemPtr(Destination destination, String idxTemp) throws SyntaxErrorException {
+		String destTempName = "%_" + destination.getMetaKeyID() + destination.getVariableName();
+		String arrayIdxTemp = "%arrayidx" + getStatementList().nextExprTempIndex();
+		
+		boolean isParam = getIsParam(destination);
+		
+		if(isParam) {
+			String loadTemp = "%" + getStatementList().nextTempIndex();
+			addLine(true, loadTemp + " = load i32** %" + destTempName + ", align 4");
+			destTempName = loadTemp;
+		}
+		
+		String typeStr = Emitter.typeToLLVMDataType(isParam, destination.getEvaluatedType());
+		addLine(true, arrayIdxTemp + " = getelementptr inbounds [" + destination.getArraySize() + " x " + typeStr + "]* " + destTempName + ", i32 0, i32 " + idxTemp);
+		return arrayIdxTemp;
+	}
+	
+	String loadTempValueAtPtr(String temp, Destination destination) throws SyntaxErrorException {
+		
+		String passValueTemp = "%" + getStatementList().nextTempIndex();
+		
+		TokenTypes type = destination.getEvaluatedType();
+		
+		//System.out.println(destination.getVariableName() + getIsIn(destination) + getIsParam(destination));
+		
+		if(!getIsIn(destination) && getIsParam(destination)) {
+			addLine(true, passValueTemp + " = load " + Emitter.typeToLLVMDataType(false, type) + "** " + temp + ", align 4");
+			temp = passValueTemp;
+			passValueTemp = "%" + getStatementList().nextTempIndex();
+		}
+		
+		addLine(true, passValueTemp + " = load " + Emitter.typeToLLVMDataType(false, type) + "* " + temp + ", align 4"); // Load operandA into general temp
+		return passValueTemp;
+	}
+	
+	public boolean getIsIn(Destination destination) {
+		
+		if(getParams() != null) {
+			for(Parameter param : getParams()) {
+				if(param.getKeyName().equals(destination.getVariableName())) {
+					return param.isIn();
+				}
+			}
+		}
+		
+		//System.out.println("params null");
+		
+		return false;
+	}
+	
+	public boolean getIsParam(Destination destination) {
+		
+		if(getParams() != null) {
+			for(Parameter param : getParams()) {
+				if(param.getKeyName().equals(destination.getVariableName())) {
+					return true;
+				}
+			}
+		}
+		
+		//System.out.println("params null");
+		
+		return false;
+	}
+	
+	protected Temporary getExprTempString(ExpressionNode expressionNode) throws Exception {
+		////System.out.println("ExprTempString");
+		String exprTempString;
+		
+		boolean isNegate;
+		
+		if(expressionNode instanceof Factor) { // Factor, not ID
+			Factor factor = (Factor) expressionNode;
+			
+			if(factor.getEvaluatedType() == TokenTypes.STR) {
+				StringConstant stringConstant = new StringConstant(factor.getValue().getStr(), getStatementList().getEmitter().nextStringConstantIndex());
+				getStatementList().getEmitter().getStringConstants().add(stringConstant);
+				String idxTemp = "%" + getStatementList().nextTempIndex();
+				addLine(true, idxTemp + " = getelementptr inbounds [" + stringConstant.getCharCount() + " x i8]* @.str" + stringConstant.getIndex() + ", i32 0, i32 0");
+				exprTempString = idxTemp;
+			} else {
+				String constTemp = "%const" + getStatementList().nextExprTempIndex();
+				String typeStr = Emitter.typeToLLVMDataType(false, factor.getEvaluatedType());
+				addLine(true, constTemp + " = alloca " + typeStr + ", align 4");
+				System.out.println(constTemp);
+				addLine(true, "store " + typeStr + " " + factor.getValue().getStr() + ", "
+						+ typeStr + "* " + constTemp + ", align 4");
+				exprTempString = "%" + getStatementList().nextTempIndex();
+				addLine(true, exprTempString + " = load " + typeStr + "* " + constTemp);
+			}
+			
+			isNegate = factor.isNegate();
+		} else if(expressionNode instanceof Destination) { // Destination
+			Destination destination = (Destination) expressionNode;
+			
+			String destTempName = "%_" + destination.getMetaKeyID() + destination.getVariableName();
+			if(destination.ptrToArrayItem()) { // Destination points to an array item
+				// Get array index
+				String arrayIdxTemp = getExprTempString(destination.getArrayIndexExpression()).getName();
+				// Calculate pointer
+				String itemPtrTemp = loadTempArrayItemPtr(destination, arrayIdxTemp);
+				// Load value at address
+				String indexTemp = "%" + getStatementList().nextTempIndex();
+				addLine(true, indexTemp + " = load " + Emitter.typeToLLVMDataType(false, destination.getEvaluatedType()) + "* " + itemPtrTemp + ", align 4");
+				
+				exprTempString = indexTemp;
+				
+			} else if(!destination.isArray()) { // Destination is a single-value variable
+				addLine(true, ";instance of Destination and not array item ptr, idxTemp: " + getStatementList().getTempIndex());
+				
+				exprTempString = loadTempValueAtPtr(destTempName, destination);
+			} else { // Destination is an array, syntax error should have been prevented by parser
+				getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Parser did not prevent array without a specified index for assignment statement operand.");
+				exprTempString = null;
+			}
+			
+			isNegate = destination.isNegate();
+		} else if(expressionNode instanceof Expression) { // Expression
+			Expression expression = (Expression) expressionNode;
+			
+			exprTempString = getExprTempString(expression.getExpressionNode()).getName();
+			
+			if(expression.getEvaluatedType() == TokenTypes.BOOL) {
+				isNegate = false;
+				
+				if(expression.isNot()) {
+					String previousExprTempString = exprTempString;
+					exprTempString = "%not" + getStatementList().nextExprTempIndex();
+					addLine(true, exprTempString + " = sub nsw i1 false, " + previousExprTempString);
+				}
+			} else {
+				isNegate = expression.isNot();
+			}
+		} else { // ExpressionNode - will not involve strings, since that would have been handled in previous if statements or by the parser
+			
+			Temporary operandA = getExprTempString(expressionNode.getOperandA());
+			Temporary operandB = getExprTempString(expressionNode.getOperandB());
+			
+			if(expressionNode.getEvaluatedType() == TokenTypes.BOOL) { // At least one operand is a boolean
+				// Runtime exception handling for integer conversion to boolean and the conversion itself
+				String leftTemp = operandA.getName();
+				String rightTemp = operandB.getName();
+				if(operandA.getType() == TokenTypes.INTEGER && operandB.getType() == TokenTypes.BOOL) {
+					addLine(true, "call void @check_int_to_bool(i32 " + operandA.getName() + ")"); // Handle runtime boolean conversion error
+					String tobool = "%tobool" + getStatementList().nextExprTempIndex();
+					addLine(true, tobool + " = icmp ne i32 " + operandA.getName() + ", 0"); // Convert to bool
+					leftTemp = tobool;
+				}
+				if(operandA.getType() == TokenTypes.BOOL && operandB.getType() == TokenTypes.INTEGER) {
+					addLine(true, "call void @check_int_to_bool(i32 " + operandB.getName() + ")"); // Handle runtime boolean conversion error
+					String tobool = "%tobool" + getStatementList().nextExprTempIndex();
+					addLine(true, tobool + " = icmp ne i32 " + operandA.getName() + ", 0"); // Convert to bool
+					rightTemp = tobool;
+				}
+				
+				exprTempString = getCalculatedTemp(expressionNode.getEvaluatedType(), expressionNode.getOperator(), leftTemp, rightTemp);
+			} else if(expressionNode.getEvaluatedType() == TokenTypes.INTEGER) {
+				exprTempString = getCalculatedTemp(expressionNode.getEvaluatedType(), expressionNode.getOperator(), operandA.getName(), operandB.getName());
+				addLine(true, ";calculate int " + getStatementList().getTempIndex());
+			} else if(expressionNode.getEvaluatedType() == TokenTypes.FLOAT) {
+				if(operandA.getType() == TokenTypes.INTEGER) {
+					String tobool = "%tofp" + getStatementList().nextExprTempIndex();
+					addLine(true, tobool + " = sitofp i32 " + operandA.getName() + " to float"); // Convert to float
+					operandA.setName(tobool);
+				}
+				if(operandB.getType() == TokenTypes.INTEGER) {
+					String tobool = "%tofp" + getStatementList().nextExprTempIndex();
+					addLine(true, tobool + " = sitofp i32 " + operandB.getName() + " to float"); // Convert to float
+					operandB.setName(tobool);
+				}
+				exprTempString = getCalculatedTemp(expressionNode.getEvaluatedType(), expressionNode.getOperator(), operandA.getName(), operandB.getName());
+			} else { // Compiler error
+				getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Unrecognized evaluated type " + Token.typeToStr(expressionNode.getEvaluatedType()));
+				exprTempString = null;
+			}
+			
+			//exprTempString = loadTempPtrValue(exprTempString, expressionNode.getEvaluatedType());
+			
+			isNegate = false;
+		}
+		
+		if(isNegate) {
+			if(expressionNode.getEvaluatedType() == TokenTypes.INTEGER) {
+				String negateTemp = "%sub" + getStatementList().nextExprTempIndex();
+				addLine(true, negateTemp + " = sub nsw i32 0, " + exprTempString);
+				exprTempString = negateTemp;
+			} else if(expressionNode.getEvaluatedType() == TokenTypes.FLOAT) {
+				String negateTemp = "%sub" + getStatementList().nextExprTempIndex();
+				addLine(true, negateTemp + " = fsub float -0.000000e+00, " + exprTempString);
+				exprTempString = negateTemp;
+			} else {
+				getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Negation operation not defined for type " + Token.typeToStr(expressionNode.getEvaluatedType()));
+				exprTempString = null;
+			}
+			
+			//exprTempString = loadTempPtrValue(exprTempString, expressionNode.getEvaluatedType());
+		}
+		
+		return new Temporary(exprTempString, expressionNode.getEvaluatedType());
+	}
+	
+	String getCalculatedTemp(TokenTypes type, TokenTypes operator, String operandATemp, String operandBTemp) throws Exception {
+		// Compare
+		String result;
+		boolean isIntOrBool = type == TokenTypes.INTEGER || type == TokenTypes.BOOL;
+		String typeStr = isIntOrBool ? Emitter.typeToLLVMDataType(false, TokenTypes.INTEGER) : Emitter.typeToLLVMDataType(false, TokenTypes.FLOAT);
+		
+		String cmpOpcode = isIntOrBool ? "icmp" : "fcmp";
+		if(operator == TokenTypes.OR || operator == TokenTypes.AND) {
+			if(type == TokenTypes.BOOL) { // Boolean result
+				String labelPrefix = operator == TokenTypes.OR ? "lor" : "land"; // Determine And / Or prefix
+				// Generate labels
+				int boolTempIdx = getStatementList().nextExprTempIndex();
+				String trueLabel = labelPrefix + ".true" + boolTempIdx;
+				String falseLabel = labelPrefix + ".false" + boolTempIdx;
+				String thenLabel = labelPrefix + ".then" + boolTempIdx;
+				String endLabel = labelPrefix + ".end" + boolTempIdx;
+				String conditionalTemp = "%cond" + getStatementList().getExprTempIndex();
+				result = conditionalTemp;
+				addLine(true, conditionalTemp + " = alloca i1, align 4");
+				if(operator == TokenTypes.OR) { // OR
+					String toboolA = "%tobool" + getStatementList().nextExprTempIndex();
+					addLine(true, toboolA + " = " + cmpOpcode + " ne i1 " + operandATemp + ", 0"); // Convert extA to bool
+					addLine(true, "br i1 " + toboolA + ", label %" + thenLabel + ", label %" + falseLabel);
+					addLine(false, "");
+					addLine(false, falseLabel + ":"); // Entry label
+					String toboolB = "%tobool" + getStatementList().nextExprTempIndex();
+					addLine(true, toboolB + " = " + cmpOpcode + " ne i1 " + operandBTemp + ", 0"); // Convert extA to bool
+					addLine(true, "br i1 " + toboolB + ", label %" + thenLabel + ", label %" + endLabel);
+					addLine(false, "");
+					addLine(false, thenLabel + ":");
+					addLine(true, "store i1 true, i1* " + conditionalTemp);
+					addLine(true, "br label %" + endLabel);
+					addLine(false, endLabel + ":");
+				} else { // AND
+					String toboolA = "%tobool" + getStatementList().nextExprTempIndex();
+					addLine(true, toboolA + " = " + cmpOpcode + " ne i1 " + operandATemp + ", 0"); // Convert extA to bool
+					addLine(true, "br i1 " + toboolA + ", label %" + trueLabel + ", label %" + endLabel);
+					addLine(false, "");
+					addLine(false, trueLabel + ":"); // Entry label
+					String toboolB = "%tobool" + getStatementList().nextExprTempIndex();
+					addLine(true, toboolB + " = " + cmpOpcode + " ne i1 " + operandBTemp + ", 0"); // Convert extA to bool
+					addLine(true, "br i1 " + toboolB + ", label %" + thenLabel + ", label %" + endLabel);
+					addLine(false, "");
+					addLine(false, thenLabel + ":");
+					addLine(true, "store i1 true, i1* " + conditionalTemp);
+					addLine(true, "br label %" + endLabel);
+					addLine(false, endLabel + ":");
+				}
+			} else if(type == TokenTypes.INTEGER) { // Bitwise result
+				result = "%" + getStatementList().nextTempIndex(); // Use temp index
+				addLine(true, result + " = " + (operator == TokenTypes.OR ? "or" : "and") + " i32* " + operandATemp + ", " + operandBTemp);
+			} else {
+				getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: No bitwise definition for type " + Token.typeToStr(operator) + ".");
+				result = null;
+			}
+		} else if(operator == TokenTypes.GT) {
+			result = "%gt" + getStatementList().nextExprTempIndex();
+			addLine(true, result + " = " + cmpOpcode + " " + (isIntOrBool ? "sgt" : "ogt") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+		} else if(operator == TokenTypes.LT) {
+			result = "%lt" + getStatementList().nextExprTempIndex();
+			addLine(true, result + " = " + cmpOpcode + " " + (isIntOrBool ? "slt" : "olt") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+		} else if(operator == TokenTypes.GTEQ) {
+			result = "%gt" + getStatementList().nextExprTempIndex();
+			addLine(true, result + " = " + cmpOpcode + " " + (isIntOrBool ? "sge" : "oge") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+		} else if(operator == TokenTypes.LTEQ) {
+			result = "%lt" + getStatementList().nextExprTempIndex();
+			addLine(true, result + " = " + cmpOpcode + " " + (isIntOrBool ? "slt" : "olt") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+		} else if(operator == TokenTypes.EQ) {
+			result = "%eq" + getStatementList().nextExprTempIndex();
+			addLine(true, result + " = " + cmpOpcode + " " + (isIntOrBool ? "eq" : "oeq") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+		} else if(operator == TokenTypes.NEQ) {
+			result = "%ne" + getStatementList().nextExprTempIndex();
+			addLine(true, result + " = " + cmpOpcode + " " + (isIntOrBool ? "ne" : "une") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+		} else if(operator == TokenTypes.ADD ||
+				operator == TokenTypes.SUB ||
+				operator == TokenTypes.MUL ||
+						operator == TokenTypes.DIV) {
+			if(type == TokenTypes.INTEGER || type == TokenTypes.FLOAT) {
+				if(operator == TokenTypes.ADD) {
+					result = "%add" + getStatementList().nextExprTempIndex();
+					addLine(true, result + " = " + (type == TokenTypes.INTEGER ? "add nsw" : "fadd") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+				} else if(operator == TokenTypes.SUB) {
+					result = "%sub" + getStatementList().nextExprTempIndex();
+					addLine(true, result + " = " + (type == TokenTypes.INTEGER ? "sub nsw" : "fsub") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+				} else if(operator == TokenTypes.MUL) {
+					result = "%mul" + getStatementList().nextExprTempIndex();
+					addLine(true, result + " = " + (type == TokenTypes.INTEGER ? "mul nsw" : "fmul") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+				} else { // Must be divide, we already confirmed it must be one of the four arithmetic operators
+					result = "%div" + getStatementList().nextExprTempIndex();
+					addLine(true, result + " = " + (type == TokenTypes.INTEGER ? "sdiv" : "fdiv") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+				}
+			} else {
+				getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Arithmetic operators not defined for type " + Token.typeToStr(operator) + ".");
+				result = null;
+			}
+		} else {
+			getStatementList().getEmitter().getCompiler().getErrorHandler().compilerError("Compiler error: Unrecognized operator " + Token.typeToStr(operator));
+			result = null;
+		}
+		
+		addLine(true, ";calculate result " + getStatementList().getTempIndex());
+		
+		return result;
+	}
+}

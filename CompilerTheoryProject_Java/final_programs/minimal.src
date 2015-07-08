@@ -1,0 +1,16 @@
+program test_program is
+    global integer a;
+    global procedure f (integer x in, integer y out)
+        integer b;
+    begin
+        b := 3;
+        y := b;
+    end procedure;
+begin
+	putString("Expected output: 3");
+    a := 3;
+    f(3, a);
+	putString("Result:");
+    putInteger(a);
+    
+end program

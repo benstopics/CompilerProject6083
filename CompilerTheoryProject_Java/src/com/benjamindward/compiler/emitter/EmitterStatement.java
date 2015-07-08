@@ -141,6 +141,7 @@ public class EmitterStatement {
 				String constTemp = "%const" + getStatementList().nextExprTempIndex();
 				String typeStr = Emitter.typeToLLVMDataType(false, factor.getEvaluatedType());
 				addLine(true, constTemp + " = alloca " + typeStr + ", align 4");
+				//System.out.println(constTemp);
 				addLine(true, "store " + typeStr + " " + factor.getValue().getStr() + ", "
 						+ typeStr + "* " + constTemp + ", align 4");
 				exprTempString = "%" + getStatementList().nextTempIndex();
@@ -341,6 +342,7 @@ public class EmitterStatement {
 				} else if(operator == TokenTypes.SUB) {
 					result = "%sub" + getStatementList().nextExprTempIndex();
 					addLine(true, result + " = " + (type == TokenTypes.INTEGER ? "sub nsw" : "fsub") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
+					//System.out.println(result + " = " + (type == TokenTypes.INTEGER ? "sub nsw" : "fsub") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);
 				} else if(operator == TokenTypes.MUL) {
 					result = "%mul" + getStatementList().nextExprTempIndex();
 					addLine(true, result + " = " + (type == TokenTypes.INTEGER ? "mul nsw" : "fmul") + " " + typeStr + " " + operandATemp + ", " + operandBTemp);

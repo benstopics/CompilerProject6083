@@ -18,9 +18,11 @@ public class IfStatement extends Statement {
 		IRAbstractNode ifBodyNode = new IRAbstractNode("if body");
 		ifBodyNode.getChildren().addAll(ifBody);
 		getChildren().add(ifBodyNode);
-		IRAbstractNode elseBodyNode = new IRAbstractNode("else body");
-		elseBodyNode.getChildren().addAll(elseBody);
-		getChildren().add(elseBodyNode);
+		if(elseBody != null) {
+			IRAbstractNode elseBodyNode = new IRAbstractNode("else body");
+			elseBodyNode.getChildren().addAll(elseBody);
+			getChildren().add(elseBodyNode);
+		}
 	}
 
 	public ArrayList<Statement> getElseBody() {
