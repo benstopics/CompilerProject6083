@@ -1,0 +1,39 @@
+"Ours not to reason why, ours but to do and die."
+- Alfred Lord Tennyson
+
+Tested on the following operating systems:
+Windows 7 32-bit
+Windows 8.1 64-bit
+
+1) Install CMake: http://www.cmake.org/download/
+	a) Install in directory "C:\Program Files\CMake"
+	b) Installer will most likely say, "Warning! PATH too long installer unable to modify PATH!: To fix this, go to the Start Menu, type in the search box "accounts" and click on User Accounts.  On the left-hand side at the bottom, click "Change my environment variables".  In the top table, click on Path and click Edit.  With the cursor inside the bottom textbox, hit the End button on the keyboard to go to the end of the line and enter "C:\Program Files\CMake\bin;"  Click both OK's to exit both windows.
+2) Install Visual Studio 2013 or later. Note: Microsoft will try to fool you into thinking that it is not free, but if you navigate around the Visual Studio homepage you will eventually find the free version called "Visual Studio Community".  At the moment, you can download it from this URL: https://www.visualstudio.com/products/visual-studio-community-vs
+3) Install the latest Python 2: https://www.python.org/downloads/ NOTE: I have heard tales of Clang accepting Python 3, but unless you develop in Python 3 and it is in your path, I would use Python 2.
+4) Install GnuWin: http://getgnuwin32.sourceforge.net/
+5) Install MinGW: http://sourceforge.net/projects/mingw/files/Installer/ The file is called "mingw-get-setup.exe"
+	a) Choose the settings you want if you have the permissions, but make sure the installation directory is "C:\MinGW"
+	b) When the Choose Packages menu appears, click Basic Setup and make sure the following packages are selected:
+		mingw-developer-toolkit
+		mingw32-base
+		mingw32-gcc-g++
+		mingw32-gcc-objc
+		msys-base
+	c) When finished, go up to the menu bar, click Installation, and click Apply Changes, then Apply
+6) Download Clang Windows binary installer ( http://llvm.org/releases/download.html ) and install Clang. Be sure to select either "Add to path for all users" or "Add to path for current user".
+
+Test Clang:
+1) Open up the command console (Windows Button + R or Start Menu -> Run, type "cmd" and press Enter)
+2) Run the command "cd %userprofile%\documents"
+3) Create a file in My Documents called "testclang.c" with the following contents:
+
+	#include <stdio.h>
+
+	int main() {
+		printf("Hello World!");
+	}
+	
+4) Go back to the command console and run the command "clang testclang.c", which should generate "a.exe" in My Documents
+5) Run the command "a" to run the executable
+6) Run the command "clang testclang.c -S -emit-llvm", which should generate "testclang.ll" in My Documents
+7) Open "testclang.ll" in a text editor to view the generated LLVM IR

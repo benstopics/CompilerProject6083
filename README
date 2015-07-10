@@ -2,7 +2,10 @@ Step 1) Make sure Java8u45 or greater is installed
 
 Step 2) Install Clang:
 
+Unix:
 sudo apt-get install clang-3.6
+
+Windows: See "installclang_windows" file for instructions perfected by my trial-and-error experiences.
 
 Step 3) Target LLVM assembler. First, navigate to project folder. Inside should be a compiler.jar file. Run a test by calling these commands to compile one of the test programs (for information about the arguments, 
 
