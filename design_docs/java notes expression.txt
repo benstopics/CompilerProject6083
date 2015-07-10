@@ -1,3 +1,0 @@
-In order to compare argument list to parameter list of procedure header in most indirect way, must evaluate argument list entirely.  This means each argument, which are in actuality expressions, have no target typemark.  Expression must then be evaluated from tree leaves up to root, which will determine what typemark the expression evaluates to.  Also, the decision of whether to generate code during or after the expression has been evaluated will have to be determined.
-
-Express() must return Expression.  Factor will return first, so leaves 

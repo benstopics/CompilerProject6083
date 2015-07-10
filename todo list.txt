@@ -1,1 +1,0 @@
-consolidate emitter methods (prepare_type_temporary)

@@ -1,5 +1,0 @@
-lexer, parser half way, switched to python, study python and LLVM code gen, threshold concepts in python allowed more elegant recursive parsing strategy, threshold concepts in LLVM code allowed commencing of code generation method designing.
-
-Most difficult portion of designing the parser was that the expression parsing method was the most important production which the entire language is supported by, however I put it off until last because it was the most daunting having to condense several productions into a single result.
-
-Decided that it would be easier to not use a parse tree, however this meant that the parser and the code generator would have to be designed at the same time.

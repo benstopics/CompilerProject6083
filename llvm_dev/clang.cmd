@@ -1,1 +1,0 @@
-"%ProgramFiles(x86)%\LLVM\bin\clang.exe" %*
