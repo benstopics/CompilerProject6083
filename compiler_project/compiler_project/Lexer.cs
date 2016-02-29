@@ -10,6 +10,16 @@ namespace compiler_project
 {
     class Lexer
     {
+        public enum Operators
+        {
+            AND, OR, NOT, ADD, SUB, MUL, DIV, LESSTHAN_EQUAL, LESSTHAN, GREATERTHAN_EQUAL,
+            GREATERTHAN, EQUAL, ASSIGN, NOT_EQUAL, BITWISE_AND, BITWISE_OR
+        }
+        public enum DataTypes
+        {
+            STRING, INT, FLOAT, BOOL
+        }
+
         private int lineNum = 1; // Start on first line
         private int colNum = 1; // Start on first column
         public int CurrentLineNumber { get { return lineNum; } }
@@ -80,6 +90,8 @@ namespace compiler_project
                     while (Char.IsLetterOrDigit(LookAheadChar) || LookAheadChar == '_') // If next character is a letter, digit, or underscore
                         result.Text += ConsumeChar(); // Append
 
+                    result.Text = result.Text.ToLower(); // Case insensitivity
+
                     switch (result.Text) // Check if keyword or identifier
                     {
                         case "string":
@@ -97,6 +109,12 @@ namespace compiler_project
                         case "bool":
                             result.Type = Token.Types.KEYWORD_BOOL;
                             break;
+                        case "true":
+                            result.Type = Token.Types.TRUE;
+                            break;
+                        case "false":
+                            result.Type = Token.Types.FALSE;
+                            break;
                         case "and":
                             result.Type = Token.Types.AND;
                             break;
@@ -111,6 +129,9 @@ namespace compiler_project
                             break;
                         case "not":
                             result.Type = Token.Types.NOT;
+                            break;
+                        case "in":
+                            result.Type = Token.Types.IN;
                             break;
                         case "out":
                             result.Type = Token.Types.OUT;
@@ -129,6 +150,18 @@ namespace compiler_project
                             break;
                         case "end":
                             result.Type = Token.Types.END;
+                            break;
+                        case "program":
+                            result.Type = Token.Types.PROGRAM;
+                            break;
+                        case "is":
+                            result.Type = Token.Types.IS;
+                            break;
+                        case "begin":
+                            result.Type = Token.Types.BEGIN;
+                            break;
+                        case "if":
+                            result.Type = Token.Types.IF;
                             break;
                         default:
                             result.Type = Token.Types.IDENTIFIER;
@@ -173,6 +206,16 @@ namespace compiler_project
                     result.Text += ConsumeChar(); // Append matching quote
 
                     result.Type = Token.Types.STRING;
+                }
+                else if (LookAheadChar == '&')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.BITWISE_AND;
+                }
+                else if (LookAheadChar == '|')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.BITWISE_OR;
                 }
                 else if (LookAheadChar == '+')
                 {
