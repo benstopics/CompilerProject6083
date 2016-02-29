@@ -11,6 +11,9 @@ namespace compiler_project
     class Lexer
     {
         private int lineNum = 1; // Start on first line
+        private int colNum = 1; // Start on first column
+        public int CurrentLineNumber { get { return lineNum; } }
+        public int CurrentColumnNumber { get { return colNum; } }
         public string ProgramText { get; set; }
         public int CurrentCharacterIndex { get; set; }
         public char LookAheadChar
@@ -59,7 +62,8 @@ namespace compiler_project
         /// 
         /// </summary>
         /// <returns></returns>
-        public Token ConsumeToken() {
+        public Token ConsumeToken()
+        {
             Token result = new Token("", Token.Types.EOF); // Assume EOF 
 
             if (LookAheadChar != '\0') // More text to read
@@ -67,8 +71,6 @@ namespace compiler_project
                 // Consume whitespace
                 while (LookAheadChar == '\n' || LookAheadChar == ' ')
                 {
-                    if (LookAheadChar == '\n')
-                        lineNum++;
                     ConsumeChar();
                 }
 
@@ -152,10 +154,10 @@ namespace compiler_project
                 }
                 else if (LookAheadChar == '"')
                 {
-                    result.Text += ConsumeChar(); // Append
+                    result.Text += ConsumeChar(); // Append first quote
                     while (LookAheadChar != '"') // Consume until matching quote
                     {
-                        if(Char.IsLetterOrDigit(LookAheadChar) || // If valid string char
+                        if (Char.IsLetterOrDigit(LookAheadChar) || // If valid string char
                             LookAheadChar == ' ' ||
                             LookAheadChar == '_' ||
                             LookAheadChar == ',' ||
@@ -165,10 +167,108 @@ namespace compiler_project
                             result.Text += ConsumeChar(); // Append
                         else
                         {
-
+                            ErrorHandler.PrintError(this, "Non-string character found.");
                         }
-                        
                     }
+                    result.Text += ConsumeChar(); // Append matching quote
+
+                    result.Type = Token.Types.STRING;
+                }
+                else if (LookAheadChar == '+')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.ADD;
+                }
+                else if (LookAheadChar == '-')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.SUB;
+                }
+                else if (LookAheadChar == '*')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.MUL;
+                }
+                else if (LookAheadChar == '/')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.DIV;
+                }
+                else if (LookAheadChar == ';')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.SEMICOLON;
+                }
+                else if (LookAheadChar == ',')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.COMMA;
+                }
+                else if (LookAheadChar == '(')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.OPEN_PARENTHESIS;
+                }
+                else if (LookAheadChar == ')')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.CLOSE_PARENTHESIS;
+                }
+                else if (LookAheadChar == '{')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.OPEN_BRACE;
+                }
+                else if (LookAheadChar == '}')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.CLOSE_BRACE;
+                }
+                else if (LookAheadChar == '=')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.EQUAL;
+                }
+                else if (LookAheadChar == '<') {
+                    result.Text += ConsumeChar(); // Append
+                    if (LookAheadChar == '=')
+                    {
+                        result.Text += ConsumeChar(); // Append
+                        result.Type = Token.Types.LESSTHAN_EQUAL;
+                    }
+                    else
+                        result.Type = Token.Types.LESSTHAN;
+                }
+                else if (LookAheadChar == '>') {
+                    result.Text += ConsumeChar(); // Append
+                    if (LookAheadChar == '=')
+                    {
+                        result.Text += ConsumeChar(); // Append
+                        result.Type = Token.Types.GREATERTHAN_EQUAL;
+                    }
+                    else
+                        result.Type = Token.Types.GREATERTHAN;
+                }
+                else if (LookAheadChar == '!') {
+                    result.Text += ConsumeChar(); // Append
+                    if (LookAheadChar == '=')
+                    {
+                        result.Text += ConsumeChar(); // Append
+                        result.Type = Token.Types.NOT_EQUAL;
+                    }
+                    else
+                        ErrorHandler.PrintError(this, "Invalid operator.");
+                }
+                else if (LookAheadChar == ':')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    if (LookAheadChar == '=')
+                    {
+                        result.Text += ConsumeChar(); // Append
+                        result.Type = Token.Types.ASSIGN;
+                    }
+                    else
+                        result.Type = Token.Types.COLON;
                 }
             }
             else
@@ -176,6 +276,9 @@ namespace compiler_project
 
             Token oldLookahead = LookAheadToken; // Save old lookahead token
             lookaheadToken = result; // Set new lookahead token to consumed token
+
+            Console.WriteLine(result.Type.ToString() + "\t" + result.Text);
+
             return oldLookahead; // Return the consumed lookahead
         }
 
@@ -186,6 +289,13 @@ namespace compiler_project
         private char ConsumeChar()
         {
             char result = LookAheadChar; // First get lookahead char before moving forward
+            if (result == '\n')
+            {
+                lineNum++; // Next line
+                colNum = 1; // Reset column count
+            }
+            else
+                colNum++;
             CurrentCharacterIndex++; // Then consume character by moving index forward
             return result;
         }

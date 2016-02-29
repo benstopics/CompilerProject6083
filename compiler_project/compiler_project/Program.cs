@@ -11,13 +11,10 @@ namespace compiler_project
         static void Main(string[] args)
         {
             Lexer lexer = new Lexer("test.src");
-            while(lexer.LookAheadToken.Type != Token.Types.EOF && lexer.LookAheadToken.Type != Token.Types.ERROR)
+            while (lexer.LookAheadToken.Type != Token.Types.EOF && lexer.LookAheadToken.Type != Token.Types.ERROR)
             {
-                Token token = lexer.ConsumeToken();
-                Console.WriteLine(token.Type.ToString() + "\t" + token.Text);
+                lexer.ConsumeToken();
             }
-
-            Console.ReadKey();
         }
     }
 }
