@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace compiler_project.ParserObjects
+namespace Compiler6083Project.ParserClasses
 {
-    class ProgramBody
+    class ProgramAST
     {
+        public string ProgramName { get; set; }
         public List<Declaration> DeclarationList { get; set; }
         public List<Statement> StatementList { get; set; }
     }

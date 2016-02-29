@@ -1,0 +1,7 @@
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\CompilerProject.csprojResolveAssemblyReference.cache
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\compiler_project.exe
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\compiler_project.pdb
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\test.src
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.exe.config
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.exe
+C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.pdb

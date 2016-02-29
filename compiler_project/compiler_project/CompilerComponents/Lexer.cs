@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace compiler_project
+namespace Compiler6083Project
 {
     class Lexer
     {
@@ -16,9 +16,20 @@ namespace compiler_project
             GREATERTHAN, EQUAL, ASSIGN, NOT_EQUAL,
             NONE
         }
+
         public enum TypeMarks
         {
             STRING, INT, FLOAT, BOOL
+        }
+        public static bool IsTypeMark(Token.Types typeMark)
+        {
+            if (typeMark == Token.Types.BOOL ||
+                typeMark == Token.Types.FLOAT ||
+                typeMark == Token.Types.INT ||
+                typeMark == Token.Types.STRING)
+                return true;
+            else
+                return false;
         }
 
         private int lineNum = 1; // Start on first line
@@ -69,6 +80,52 @@ namespace compiler_project
             }
         }
 
+        public Token ConsumeKeywordToken(Token.Types keyword)
+        {
+            if (LookAheadToken.Type == keyword)
+            {
+                return ConsumeToken();
+            }
+            else
+            {
+                ErrorHandler.MissingRequiredKeywordError(this, keyword);
+                throw new NotImplementedException(); // Will never reach
+            }
+        }
+
+        public Token ConsumeIdentifierToken()
+        {
+            if (LookAheadToken.Type == Token.Types.IDENTIFIER)
+                return ConsumeToken();
+            else
+            {
+                ErrorHandler.IdentifierExpected(this);
+                throw new NotImplementedException(); // Will never reach
+            }
+        }
+
+        public Token ConsumeOperatorToken(Token.Types op)
+        {
+            if (LookAheadToken.Type == op)
+                return ConsumeToken();
+            else
+            {
+                ErrorHandler.SyntaxError(this, "Missing '" + op.ToString() + "' operator.");
+                throw new NotImplementedException();
+            }
+        }
+
+        public Token ConsumeTypemarkToken()
+        {
+            if (IsTypeMark(LookAheadToken.Type))
+                return ConsumeToken();
+            else
+            {
+                ErrorHandler.SyntaxError(this, "Expected typemark keyword.");
+                throw new NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -96,19 +153,19 @@ namespace compiler_project
                     switch (result.Text) // Check if keyword or identifier
                     {
                         case "string":
-                            result.Type = Token.Types.KEYWORD_STRING;
+                            result.Type = Token.Types.STRING;
                             break;
                         case "case":
                             result.Type = Token.Types.CASE;
                             break;
                         case "int":
-                            result.Type = Token.Types.KEYWORD_INT;
+                            result.Type = Token.Types.INT;
                             break;
                         case "for":
                             result.Type = Token.Types.FOR;
                             break;
                         case "bool":
-                            result.Type = Token.Types.KEYWORD_BOOL;
+                            result.Type = Token.Types.BOOL;
                             break;
                         case "true":
                             result.Type = Token.Types.TRUE;
@@ -120,7 +177,7 @@ namespace compiler_project
                             result.Type = Token.Types.AND;
                             break;
                         case "float":
-                            result.Type = Token.Types.KEYWORD_FLOAT;
+                            result.Type = Token.Types.FLOAT;
                             break;
                         case "or":
                             result.Type = Token.Types.OR;
@@ -181,10 +238,10 @@ namespace compiler_project
                         while (Char.IsDigit(LookAheadChar)) // If next character is a digit
                             result.Text += ConsumeChar(); // Append
 
-                        result.Type = Token.Types.FLOAT;
+                        result.Type = Token.Types.FLOAT_VALUE;
                     }
                     else // Integer
-                        result.Type = Token.Types.INT;
+                        result.Type = Token.Types.INT_VALUE;
                 }
                 else if (LookAheadChar == '"')
                 {
@@ -201,12 +258,12 @@ namespace compiler_project
                             result.Text += ConsumeChar(); // Append
                         else
                         {
-                            ErrorHandler.PrintError(this, "Non-string character found.");
+                            ErrorHandler.SyntaxError(this, "Non-string character found.");
                         }
                     }
                     result.Text += ConsumeChar(); // Append matching quote
 
-                    result.Type = Token.Types.STRING;
+                    result.Type = Token.Types.STRING_VALUE;
                 }
                 else if (LookAheadChar == '&')
                 {
@@ -277,7 +334,7 @@ namespace compiler_project
                         result.Type = Token.Types.EQUAL;
                     }
                     else
-                        ErrorHandler.PrintError(this, "Invalid operator.");
+                        ErrorHandler.SyntaxError(this, "Invalid operator.");
                 }
                 else if (LookAheadChar == '<') {
                     result.Text += ConsumeChar(); // Append
@@ -307,7 +364,7 @@ namespace compiler_project
                         result.Type = Token.Types.NOT_EQUAL;
                     }
                     else
-                        ErrorHandler.PrintError(this, "Invalid operator.");
+                        ErrorHandler.SyntaxError(this, "Invalid operator.");
                 }
                 else if (LookAheadChar == ':')
                 {
@@ -319,6 +376,10 @@ namespace compiler_project
                     }
                     else
                         result.Type = Token.Types.COLON;
+                }
+                else
+                {
+                    ErrorHandler.SyntaxError(this, "Invalid token.");
                 }
             }
             else

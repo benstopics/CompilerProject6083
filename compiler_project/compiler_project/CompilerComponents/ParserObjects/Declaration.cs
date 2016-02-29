@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace compiler_project.ParserObjects
+namespace Compiler6083Project.ParserClasses
 {
     abstract class Declaration
     {

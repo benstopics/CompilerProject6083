@@ -1,7 +1,3 @@
-﻿string int bool float
-hELLo testINg_598483
-12354
-2345089.9587434 324098.
-"testing testing 123"
-"testing testing invalid
-"testing testing invalid $" 
+﻿program BEN is
+begin
+end program

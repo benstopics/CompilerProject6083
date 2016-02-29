@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace compiler_project.ParserObjects
+namespace Compiler6083Project.ParserClasses
 {
     class LoopStatement : Statement
     {

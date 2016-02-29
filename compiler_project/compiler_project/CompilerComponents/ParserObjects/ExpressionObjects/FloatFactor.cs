@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace compiler_project.ParserObjects.ExpressionObjects
+namespace Compiler6083Project.ParserClasses.ExpressionObjects
 {
     class FloatFactor : NumberFactor
     {
