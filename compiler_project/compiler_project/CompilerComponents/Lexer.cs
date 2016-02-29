@@ -13,9 +13,10 @@ namespace compiler_project
         public enum Operators
         {
             AND, OR, NOT, ADD, SUB, MUL, DIV, LESSTHAN_EQUAL, LESSTHAN, GREATERTHAN_EQUAL,
-            GREATERTHAN, EQUAL, ASSIGN, NOT_EQUAL, BITWISE_AND, BITWISE_OR
+            GREATERTHAN, EQUAL, ASSIGN, NOT_EQUAL,
+            NONE
         }
-        public enum DataTypes
+        public enum TypeMarks
         {
             STRING, INT, FLOAT, BOOL
         }
@@ -210,12 +211,12 @@ namespace compiler_project
                 else if (LookAheadChar == '&')
                 {
                     result.Text += ConsumeChar(); // Append
-                    result.Type = Token.Types.BITWISE_AND;
+                    result.Type = Token.Types.AND;
                 }
                 else if (LookAheadChar == '|')
                 {
                     result.Text += ConsumeChar(); // Append
-                    result.Type = Token.Types.BITWISE_OR;
+                    result.Type = Token.Types.OR;
                 }
                 else if (LookAheadChar == '+')
                 {
@@ -270,7 +271,13 @@ namespace compiler_project
                 else if (LookAheadChar == '=')
                 {
                     result.Text += ConsumeChar(); // Append
-                    result.Type = Token.Types.EQUAL;
+                    if (LookAheadChar == '=')
+                    {
+                        result.Text += ConsumeChar(); // Append
+                        result.Type = Token.Types.EQUAL;
+                    }
+                    else
+                        ErrorHandler.PrintError(this, "Invalid operator.");
                 }
                 else if (LookAheadChar == '<') {
                     result.Text += ConsumeChar(); // Append
