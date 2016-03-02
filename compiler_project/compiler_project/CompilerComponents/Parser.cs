@@ -43,13 +43,14 @@ namespace Compiler6083Project.CompilerComponents
             while (true)
             {
                 Statement statement = ParseStatement();
-                if(statement == null) // Statement not found
+                if (statement == null) // Statement not found
                 {
                     break;
                 }
                 else
                 {
                     statementList.Add(statement); // Store statement
+                    Scanner.ConsumeOperatorToken(Token.Types.SEMICOLON);
                 }
             }
 
@@ -66,51 +67,110 @@ namespace Compiler6083Project.CompilerComponents
 
             if (NextTokenType == Token.Types.IDENTIFIER) // Assignment statement or procedure call
             {
-                string name = Scanner.ConsumeIdentifierToken().Text; // Capture identifier name
+                Token idToken = Scanner.ConsumeIdentifierToken(); // Capture identifier
                 if (NextTokenType == Token.Types.OPEN_PARENTHESIS) // Procedure call
                 {
-                    // TODO: Procedure call
+                    ProcedureCall returnProcCall = new ProcedureCall(idToken.CodeLineNumber, idToken.CodeColumnNumber, idToken.CodeCharacterIndex);
+                    returnProcCall.ArgumentList = new List<ExpressionClass>();
+                    Scanner.ConsumeOperatorToken(Token.Types.OPEN_PARENTHESIS);
+                    if (NextTokenType == Token.Types.CLOSE_PARENTHESIS) // No arguments
+                    {
+                        Scanner.ConsumeOperatorToken(Token.Types.CLOSE_PARENTHESIS);
+                    }
+                    else
+                    {
+                        // If next token not close parenthesis, expect an argument
+                        returnProcCall.ArgumentList.Add(ParseExpression());
+                        while (NextTokenType == Token.Types.COMMA) // More than one argument
+                        {
+                            Scanner.ConsumeOperatorToken(Token.Types.COMMA);
+                            returnProcCall.ArgumentList.Add(ParseExpression());
+                        }
+                    }
+
+                    result = returnProcCall; // Secure result
                 }
                 else if (NextTokenType == Token.Types.OPEN_BRACKET || NextTokenType == Token.Types.ASSIGN) // Assignment statement
                 {
-                    AssignmentStatement returnAssign = new AssignmentStatement();
-                    returnAssign.Destination = ParseMemoryLocation(name); // Destination is memory location; provide parsed identifier
-                    // TODO: Assignment statement
+                    result = ParseAssignmentStatement(ParseMemoryLocation(idToken)); // Secure result
                 }
                 else // Syntax error
                     ErrorHandler.SyntaxError(Scanner, "Expect either '(' for procedure call or ':=' (or '[' if assigning an array element) for assignment statement.");
             }
             else if (NextTokenType == Token.Types.IF) // If statement
             {
-                // TODO: If statement
+                Token initToken = Scanner.ConsumeKeywordToken(Token.Types.IF);
+                IfStatement returnIf = new IfStatement(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
+                Scanner.ConsumeOperatorToken(Token.Types.OPEN_PARENTHESIS);
+                returnIf.ConditionalExpression = ParseExpression();
+                Scanner.ConsumeOperatorToken(Token.Types.CLOSE_PARENTHESIS);
+                Scanner.ConsumeKeywordToken(Token.Types.THEN);
+                returnIf.StatementList = ParseStatementList();
+                if (returnIf.StatementList.Count < 1) // No statements found (at least one required)
+                {
+                    ErrorHandler.SyntaxError(Scanner, "If statement body must have at least one statement.");
+                }
+                else if (NextTokenType == Token.Types.ELSE) // Has else statement (optional)
+                {
+                    Scanner.ConsumeKeywordToken(Token.Types.ELSE);
+                    returnIf.ElseStatementList = ParseStatementList();
+                    if (returnIf.ElseStatementList.Count < 1) // No statements found (at least one required)
+                    {
+                        ErrorHandler.SyntaxError(Scanner, "Else statement body must have at least one statement.");
+                    }
+                    Scanner.ConsumeKeywordToken(Token.Types.END);
+                    Scanner.ConsumeKeywordToken(Token.Types.IF);
+
+                    result = returnIf; // Secure result
+                }
             }
             else if (NextTokenType == Token.Types.FOR) // Loop statement
             {
-                LoopStatement returnLoop = new LoopStatement();
-                Scanner.ConsumeKeywordToken(Token.Types.FOR);
+                Token initToken = Scanner.ConsumeKeywordToken(Token.Types.FOR);
+                LoopStatement returnLoop = new LoopStatement(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
                 Scanner.ConsumeOperatorToken(Token.Types.OPEN_PARENTHESIS);
-                string variableName = Scanner.ConsumeIdentifierToken().Text; // Variable name for assignment statement destination
-                returnLoop.Initialization = ParseAssignmentStatement(ParseMemoryLocation(variableName));
+                returnLoop.Initialization = ParseAssignmentStatement(ParseMemoryLocation(Scanner.ConsumeIdentifierToken()));
                 Scanner.ConsumeOperatorToken(Token.Types.SEMICOLON);
-                //returnLoop.AfterThought = ParseExpression()
+                returnLoop.AfterThought = ParseExpression(); // Afterthought
+                Scanner.ConsumeOperatorToken(Token.Types.CLOSE_PARENTHESIS);
+                returnLoop.StatementList = ParseStatementList(); // Loop body
+                Scanner.ConsumeKeywordToken(Token.Types.END);
+                Scanner.ConsumeKeywordToken(Token.Types.FOR);
+
+                result = returnLoop; // Secure result
             }
             else if (NextTokenType == Token.Types.RETURN) // Return statement
             {
-                result = new ReturnStatement();
-                Scanner.ConsumeToken(); // Skip keyword
+                Token initToken = Scanner.ConsumeToken();
+                // Secure result
+                result = new ReturnStatement(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
             }
 
             return result;
         }
 
-        private MemoryLocation ParseMemoryLocation(string variableName)
+        private ExpressionClass ParseExpression()
         {
             throw new NotImplementedException();
         }
 
+        private MemoryLocation ParseMemoryLocation(Token idToken)
+        {
+            MemoryLocation result = new MemoryLocation(idToken.CodeLineNumber, idToken.CodeColumnNumber, idToken.CodeCharacterIndex);
+
+            result.VariableName = idToken.Text;
+            // TODO: Memory location
+
+            return result;
+        }
+
         private AssignmentStatement ParseAssignmentStatement(MemoryLocation destination)
         {
-            throw new NotImplementedException();
+            AssignmentStatement result = new AssignmentStatement(destination);
+
+
+
+            return result;
         }
 
         private List<Declaration> ParseDeclarationList()
@@ -151,10 +211,11 @@ namespace Compiler6083Project.CompilerComponents
 
         private VariableDeclaration ParseVariableDeclaration()
         {
-            VariableDeclaration result = new VariableDeclaration();
+            VariableDeclaration result;
 
             // Typemark
             Token typeMarkToken = Scanner.ConsumeTypemarkToken();
+            result = new VariableDeclaration(typeMarkToken.CodeLineNumber, typeMarkToken.CodeColumnNumber, typeMarkToken.CodeCharacterIndex);
             if (typeMarkToken.Type == Token.Types.BOOL)
                 result.TypeMark = Lexer.TypeMarks.BOOL;
             else if (typeMarkToken.Type == Token.Types.FLOAT)
@@ -184,10 +245,11 @@ namespace Compiler6083Project.CompilerComponents
 
         private ProcedureDeclaration ParseProcedureDeclaration()
         {
-            ProcedureDeclaration result = new ProcedureDeclaration();
+            ProcedureDeclaration result;
 
             // Procedure signature
-            Scanner.ConsumeKeywordToken(Token.Types.PROCEDURE);
+            Token initToken = Scanner.ConsumeKeywordToken(Token.Types.PROCEDURE);
+            result = new ProcedureDeclaration(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
             result.ProcedureName = Scanner.ConsumeIdentifierToken().Text; // Name
             Scanner.ConsumeOperatorToken(Token.Types.OPEN_PARENTHESIS);
             result.ParameterList = ParseParameterList(); // Parameter list (optional)
@@ -206,16 +268,13 @@ namespace Compiler6083Project.CompilerComponents
         {
             List<Parameter> result = new List<Parameter>();
 
-            if (Lexer.IsTypeMark(NextTokenType)) // Optional first parameter
+            if (Lexer.IsTypeMark(NextTokenType)) // Beginning token of parameter syntax found
             {
-                if (Lexer.IsTypeMark(NextTokenType)) // Beginning token of parameter syntax found
+                result.Add(ParseParameter()); // First parameter
+                while (NextTokenType == Token.Types.COMMA) // Comma delimitered list
                 {
-                    result.Add(ParseParameter()); // First parameter
-                    while (NextTokenType == Token.Types.COMMA) // Comma delimitered list
-                    {
-                        Scanner.ConsumeOperatorToken(Token.Types.COMMA); // Skip comma token
-                        result.Add(ParseParameter()); // Comma found, therefore another parameter is mandatory
-                    }
+                    Scanner.ConsumeOperatorToken(Token.Types.COMMA); // Skip comma token
+                    result.Add(ParseParameter()); // Comma found, therefore another parameter is mandatory
                 }
             }
 
@@ -224,11 +283,15 @@ namespace Compiler6083Project.CompilerComponents
 
         private Parameter ParseParameter()
         {
-            Parameter result = new Parameter(ParseVariableDeclaration(),
-                    NextTokenType == Token.Types.IN ? Parameter.ArgType.IN // IN keyword found
-                    : NextTokenType == Token.Types.OUT ? Parameter.ArgType.OUT // OUT keyword found
-                    : Parameter.ArgType.ERROR); // Syntax error: parameter type not found
-            if (result.Type == Parameter.ArgType.ERROR) // Parameter type not found
+            Parameter result;
+
+            VariableDeclaration varDec = ParseVariableDeclaration();
+            Parameter.ArgType argType = Parameter.ArgType.ERROR; // Assume parameter type keyword not found
+            if (NextTokenType == Token.Types.IN)
+                argType = Parameter.ArgType.IN; // IN keyword found
+            else if (NextTokenType == Token.Types.OUT)
+                argType = Parameter.ArgType.OUT; // OUT keyword found
+            if (argType == Parameter.ArgType.ERROR) // Syntax error: parameter type not found
             {
                 ErrorHandler.SyntaxError(Scanner, "Expected 'IN' or 'OUT'.");
                 // Unreachable code
@@ -236,7 +299,9 @@ namespace Compiler6083Project.CompilerComponents
             }
             else // Parameter type found
             {
-                Scanner.ConsumeToken(); // Skip in/out keyword; info already stored
+                Token initToken = Scanner.ConsumeToken(); // Skip in/out keyword; info already stored
+                result = new Parameter(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex, varDec, argType);
+
                 return result;
             }
         }

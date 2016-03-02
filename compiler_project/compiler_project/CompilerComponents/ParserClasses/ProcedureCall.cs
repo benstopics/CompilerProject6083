@@ -11,8 +11,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
         public string ProcedureName { get; set; }
         public List<ExpressionClass> ArgumentList { get; set; }
 
-        public ProcedureCall (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public ProcedureCall(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

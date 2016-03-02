@@ -21,8 +21,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
             }
         }
 
-        public MemoryLocation (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public MemoryLocation(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

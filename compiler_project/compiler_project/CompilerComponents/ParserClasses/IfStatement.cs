@@ -13,8 +13,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
         public List<Statement> ElseStatementList { get; set; }
         public bool HasElse { get { return ElseStatementList.Count > 0; } }
 
-        public IfStatement (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public IfStatement(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

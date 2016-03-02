@@ -9,5 +9,11 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObje
     class BoolFactor : ExpressionClass
     {
         public bool Value { get; set; }
+
+        public BoolFactor(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
+        {
+
+        }
     }
 }

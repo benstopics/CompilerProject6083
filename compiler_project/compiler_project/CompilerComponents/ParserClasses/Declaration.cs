@@ -9,8 +9,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
     {
         public bool IsGlobal { get; set; }
 
-        public Declaration (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public Declaration(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

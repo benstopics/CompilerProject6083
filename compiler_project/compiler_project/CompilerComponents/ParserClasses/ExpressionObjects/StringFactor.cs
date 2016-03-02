@@ -9,5 +9,11 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObje
     class StringFactor : ExpressionClass
     {
         public string Value { get; set; }
+
+        public StringFactor(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
+        {
+
+        }
     }
 }

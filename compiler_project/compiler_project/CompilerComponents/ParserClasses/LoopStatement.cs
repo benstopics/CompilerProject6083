@@ -12,8 +12,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
         public ExpressionClass AfterThought { get; set; }
         public List<Statement> StatementList { get; set; }
 
-        public LoopStatement (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public LoopStatement(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

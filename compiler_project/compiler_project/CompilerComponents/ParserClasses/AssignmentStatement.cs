@@ -10,5 +10,11 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
     {
         public MemoryLocation Destination { get; set; }
         public ExpressionClass Expression { get; set; }
+
+        public AssignmentStatement(MemoryLocation memLoc)
+            : base(memLoc.CodeLineNumber, memLoc.CodeColumnNumber, memLoc.CodeCharacterIndex)
+        {
+
+        }
     }
 }

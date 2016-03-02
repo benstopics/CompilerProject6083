@@ -15,8 +15,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 
         public ArgType Type { get; set; }
 
-        public Parameter(int lineNum, int colNum, VariableDeclaration varDec, ArgType argType)
-            : base (lineNum, colNum)
+        public Parameter(int lineNum, int colNum, int charIndex, VariableDeclaration varDec, ArgType argType)
+            : base (lineNum, colNum, charIndex)
         {
             this.TypeMark = varDec.TypeMark;
             this.VariableName = varDec.VariableName;

@@ -10,5 +10,11 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObje
     {
         public bool IsNegated { get; set; }
         public MemoryLocation Location { get; set; }
+
+        public VariableFactor(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
+        {
+
+        }
     }
 }

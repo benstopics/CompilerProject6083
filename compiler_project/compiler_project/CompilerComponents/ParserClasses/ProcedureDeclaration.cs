@@ -15,8 +15,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 
         public bool HasParameterList { get { return ParameterList.Count > 0; } }
 
-        public ProcedureDeclaration (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public ProcedureDeclaration(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

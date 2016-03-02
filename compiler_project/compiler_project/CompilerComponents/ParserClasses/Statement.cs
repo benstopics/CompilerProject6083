@@ -7,8 +7,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     abstract class Statement : ParserASTNode
     {
-        public Statement (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public Statement(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

@@ -12,8 +12,8 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
         public ExpressionClass OperandA { get; set; }
         public ExpressionClass OperandB { get; set; }
 
-        public ExpressionClass (int lineNum, int colNum)
-            : base(lineNum, colNum)
+        public ExpressionClass (int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
         {
 
         }

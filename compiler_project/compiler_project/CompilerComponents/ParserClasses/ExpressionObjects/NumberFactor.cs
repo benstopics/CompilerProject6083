@@ -9,6 +9,11 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObje
     abstract class NumberFactor : ExpressionClass
     {
         public bool IsNegated { get; set; }
-        public float Value { get; set; }
+
+        public NumberFactor(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
+        {
+
+        }
     }
 }

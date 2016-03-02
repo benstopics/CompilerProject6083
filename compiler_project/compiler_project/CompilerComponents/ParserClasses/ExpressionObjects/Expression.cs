@@ -8,7 +8,7 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     class Expression : ExpressionClass
     {
-        public Lexer.Operators Operator
+        public new Lexer.Operators Operator
         {
             get
             {
@@ -32,6 +32,12 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
                     value == Lexer.Operators.NONE)
                     base.Operator = value;
             }
+        }
+
+        public Expression(int lineNum, int colNum, int charIndex)
+            : base(lineNum, colNum, charIndex)
+        {
+
         }
     }
 }
