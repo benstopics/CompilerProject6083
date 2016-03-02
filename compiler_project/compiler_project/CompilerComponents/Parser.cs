@@ -40,12 +40,61 @@ namespace Compiler6083Project.CompilerComponents
         {
             List<Statement> statementList = new List<Statement>();
 
-            // TODO: Work on statement list parsing method
+            while (true)
+            {
+                Statement statement = ParseStatement();
+                if(statement == null) // Statement not found
+                {
+                    break;
+                }
+                else
+                {
+                    statementList.Add(statement); // Store statement
+                }
+            }
 
             return statementList;
         }
 
-        public List<Declaration> ParseDeclarationList()
+        /// <summary>
+        /// Method used by the parser to capture a statement AST node from the Lexer token stream.
+        /// </summary>
+        /// <returns>Parsed statement. If statement not found, returns null.</returns>
+        private Statement ParseStatement()
+        {
+            Statement result = null;
+
+            if (NextTokenType == Token.Types.IDENTIFIER) // Assignment statement or procedure call
+            {
+                string name = Scanner.ConsumeIdentifierToken().Text; // Capture identifier name
+                if (NextTokenType == Token.Types.OPEN_PARENTHESIS) // Procedure call
+                {
+                    // TODO: Procedure call
+                }
+                else if (NextTokenType == Token.Types.OPEN_BRACKET || NextTokenType == Token.Types.ASSIGN) // Assignment statement
+                {
+                    // TODO: Assignment statement
+                }
+                else // Syntax error
+                    ErrorHandler.SyntaxError(Scanner, "Expect either '(' for procedure call or ':=' (or '[' if assigning an array element) for assignment statement.");
+            }
+            else if (NextTokenType == Token.Types.IF) // If statement
+            {
+                // TODO: If statement
+            }
+            else if (NextTokenType == Token.Types.FOR) // Loop statement
+            {
+                // TODO: Loop statement
+            }
+            else if (NextTokenType == Token.Types.RETURN) // Return statement
+            {
+                // TODO: Return statement
+            }
+
+            return result;
+        }
+
+        private List<Declaration> ParseDeclarationList()
         {
             List<Declaration> decList = new List<Declaration>();
 
