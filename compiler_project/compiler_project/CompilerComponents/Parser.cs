@@ -40,7 +40,7 @@ namespace Compiler6083Project.CompilerComponents
         {
             List<Statement> statementList = new List<Statement>();
 
-
+            // TODO: Work on statement list parsing method
 
             return statementList;
         }
@@ -100,7 +100,16 @@ namespace Compiler6083Project.CompilerComponents
             // Name
             result.VariableName = Scanner.ConsumeIdentifierToken().Text;
             // Optional array size
-            // TODO: Continue coding variable declaration parsing method
+            if (NextTokenType == Token.Types.OPEN_BRACKET)
+            {
+                Scanner.ConsumeOperatorToken(Token.Types.OPEN_BRACKET);
+                int arraySize = Scanner.ConsumeInt();
+                if (arraySize > 0)
+                    result.ArraySize = arraySize;
+                else
+                    ErrorHandler.SyntaxError(Scanner, "Array size must at least 1.");
+                Scanner.ConsumeOperatorToken(Token.Types.CLOSE_BRACKET);
+            }
 
             return result;
         }
@@ -127,7 +136,41 @@ namespace Compiler6083Project.CompilerComponents
 
         private List<Parameter> ParseParameterList()
         {
-            throw new NotImplementedException();
+            List<Parameter> result = new List<Parameter>();
+
+            if (Lexer.IsTypeMark(NextTokenType)) // Optional first parameter
+            {
+                if (Lexer.IsTypeMark(NextTokenType)) // Beginning token of parameter syntax found
+                {
+                    result.Add(ParseParameter()); // First parameter
+                    while (NextTokenType == Token.Types.COMMA) // Comma delimitered list
+                    {
+                        Scanner.ConsumeOperatorToken(Token.Types.COMMA); // Skip comma token
+                        result.Add(ParseParameter()); // Comma found, therefore another parameter is mandatory
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private Parameter ParseParameter()
+        {
+            Parameter result = new Parameter(ParseVariableDeclaration(),
+                    NextTokenType == Token.Types.IN ? Parameter.ArgType.IN // IN keyword found
+                    : NextTokenType == Token.Types.OUT ? Parameter.ArgType.OUT // OUT keyword found
+                    : Parameter.ArgType.ERROR); // Syntax error: parameter type not found
+            if (result.Type == Parameter.ArgType.ERROR) // Parameter type not found
+            {
+                ErrorHandler.SyntaxError(Scanner, "Expected 'IN' or 'OUT'.");
+                // Unreachable code
+                throw new NotImplementedException();
+            }
+            else // Parameter type found
+            {
+                Scanner.ConsumeToken(); // Skip in/out keyword; info already stored
+                return result;
+            }
         }
     }
 }

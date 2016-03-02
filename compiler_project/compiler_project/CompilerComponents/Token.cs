@@ -14,7 +14,9 @@ namespace Compiler6083Project
             BOOL, CASE, FOR, AND, OR, GLOBAL, NOT, OUT, PROCEDURE, THEN, RETURN, ELSE, END, ADD,
             SUB, MUL, DIV, COLON, SEMICOLON, COMMA, OPEN_PARENTHESIS, CLOSE_PARENTHESIS, OPEN_BRACE,
             CLOSE_BRACE, LESSTHAN_EQUAL, LESSTHAN, GREATERTHAN_EQUAL, GREATERTHAN, EQUAL, ASSIGN, NOT_EQUAL,
-            TRUE, FALSE, IN, PROGRAM, IS, BEGIN, IF
+            TRUE, FALSE, IN, PROGRAM, IS, BEGIN, IF,
+            OPEN_BRACKET,
+            CLOSE_BRACKET
         }
         public static Token ErrorToken = new Token("", Types.ERROR);
         public static Token EOFToken = new Token("", Types.EOF);

@@ -111,7 +111,7 @@ namespace Compiler6083Project
             else
             {
                 ErrorHandler.SyntaxError(this, "Missing '" + op.ToString() + "' operator.");
-                throw new NotImplementedException();
+                throw new NotImplementedException(); // Will never reach
             }
         }
 
@@ -122,7 +122,20 @@ namespace Compiler6083Project
             else
             {
                 ErrorHandler.SyntaxError(this, "Expected typemark keyword.");
-                throw new NotImplementedException();
+                throw new NotImplementedException(); // Will never reach
+            }
+        }
+
+        public int ConsumeInt()
+        {
+            if (LookAheadToken.Type == Token.Types.INT_VALUE)
+            {
+                return Convert.ToInt32(ConsumeToken().Text);
+            }
+            else
+            {
+                ErrorHandler.SyntaxError(this, "Expected integer value.");
+                throw new NotImplementedException(); // Will never reach
             }
         }
 
@@ -310,10 +323,22 @@ namespace Compiler6083Project
                     result.Text += ConsumeChar(); // Append
                     result.Type = Token.Types.OPEN_PARENTHESIS;
                 }
+
                 else if (LookAheadChar == ')')
                 {
                     result.Text += ConsumeChar(); // Append
                     result.Type = Token.Types.CLOSE_PARENTHESIS;
+                }
+                else if (LookAheadChar == '[')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.OPEN_BRACKET;
+                }
+
+                else if (LookAheadChar == ']')
+                {
+                    result.Text += ConsumeChar(); // Append
+                    result.Type = Token.Types.CLOSE_BRACKET;
                 }
                 else if (LookAheadChar == '{')
                 {

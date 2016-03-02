@@ -9,9 +9,18 @@ namespace Compiler6083Project.ParserClasses
     {
         public enum ArgType
         {
-            IN, OUT
+            IN, OUT,
+            ERROR
         }
 
         public ArgType Type { get; set; }
+
+        public Parameter(VariableDeclaration varDec, ArgType argType)
+        {
+            this.TypeMark = varDec.TypeMark;
+            this.VariableName = varDec.VariableName;
+            this.ArraySize = varDec.ArraySize;
+            Type = argType;
+        }
     }
 }

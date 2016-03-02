@@ -5,3 +5,6 @@ C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project
 C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.exe.config
 C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.exe
 C:\Users\bward\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.pdb
+C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.exe.config
+C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\compiler_project.exe
+C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\compiler_project.pdb
