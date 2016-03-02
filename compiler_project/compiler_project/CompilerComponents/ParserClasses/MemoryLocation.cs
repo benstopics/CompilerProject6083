@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Compiler6083Project.ParserClasses
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
-    class MemoryLocation
+    class MemoryLocation : ParserASTNode
     {
         public string VariableName { get; set; }
         private int arrayIndex = -1; // Not array by default
@@ -19,6 +19,12 @@ namespace Compiler6083Project.ParserClasses
                 else
                     return false;
             }
+        }
+
+        public MemoryLocation (int lineNum, int colNum)
+            : base(lineNum, colNum)
+        {
+
         }
     }
 }

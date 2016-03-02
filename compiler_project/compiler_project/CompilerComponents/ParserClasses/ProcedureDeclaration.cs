@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler6083Project.ParserClasses
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     class ProcedureDeclaration : Declaration
     {
@@ -14,5 +14,11 @@ namespace Compiler6083Project.ParserClasses
         public List<Statement> StatementList { get; set; }
 
         public bool HasParameterList { get { return ParameterList.Count > 0; } }
+
+        public ProcedureDeclaration (int lineNum, int colNum)
+            : base(lineNum, colNum)
+        {
+
+        }
     }
 }

@@ -18,21 +18,31 @@ namespace Compiler6083Project
             OPEN_BRACKET,
             CLOSE_BRACKET
         }
-        public static Token ErrorToken = new Token("", Types.ERROR);
-        public static Token EOFToken = new Token("", Types.EOF);
+        public static Token ErrorToken = new Token(0, 0, 0, "", Types.ERROR);
+        public static Token EOFToken = new Token(0, 0, 0, "", Types.EOF);
         
         public string Text { get; set; }
         public Types Type { get; set; }
+
+        private int lineNum;
+        private int colNum;
+        private int charIndex;
+        public int CodeLineNumber { get { return lineNum; } }
+        public int CodeColumnNumber { get { return colNum; } }
+        public int CodeCharacterIndex { get { return charIndex; } }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="text"></param>
         /// <param name="type"></param>
-        public Token(string text, Types type)
+        public Token(int lineNum, int colNum, int charIndex, string text, Types type)
         {
             Text = text;
             Type = type;
+            this.lineNum = lineNum;
+            this.colNum = colNum;
+            this.charIndex = charIndex;
         }
     }
 }

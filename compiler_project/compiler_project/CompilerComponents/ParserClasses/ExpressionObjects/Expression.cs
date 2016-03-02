@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler6083Project.ParserClasses
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     class Expression : ExpressionClass
     {

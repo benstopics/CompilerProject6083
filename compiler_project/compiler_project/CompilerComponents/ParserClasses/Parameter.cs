@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Compiler6083Project.ParserClasses
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     class Parameter : VariableDeclaration
     {
@@ -15,7 +15,8 @@ namespace Compiler6083Project.ParserClasses
 
         public ArgType Type { get; set; }
 
-        public Parameter(VariableDeclaration varDec, ArgType argType)
+        public Parameter(int lineNum, int colNum, VariableDeclaration varDec, ArgType argType)
+            : base (lineNum, colNum)
         {
             this.TypeMark = varDec.TypeMark;
             this.VariableName = varDec.VariableName;

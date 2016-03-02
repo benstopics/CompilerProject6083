@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler6083Project.ParserClasses.ExpressionObjects
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObjects
 {
-    class VariableFactor : ExpressionClass
+    abstract class NumberFactor : ExpressionClass
     {
         public bool IsNegated { get; set; }
-        public MemoryLocation Location { get; set; }
+        public float Value { get; set; }
     }
 }

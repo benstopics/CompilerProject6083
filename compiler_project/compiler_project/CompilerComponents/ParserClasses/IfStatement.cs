@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler6083Project.ParserClasses
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     class IfStatement : Statement
     {
@@ -12,5 +12,11 @@ namespace Compiler6083Project.ParserClasses
         public List<Statement> StatementList { get; set; }
         public List<Statement> ElseStatementList { get; set; }
         public bool HasElse { get { return ElseStatementList.Count > 0; } }
+
+        public IfStatement (int lineNum, int colNum)
+            : base(lineNum, colNum)
+        {
+
+        }
     }
 }

@@ -145,7 +145,7 @@ namespace Compiler6083Project
         /// <returns></returns>
         public Token ConsumeToken()
         {
-            Token result = new Token("", Token.Types.EOF); // Assume EOF 
+            Token result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF 
 
             if (LookAheadChar != '\0') // More text to read
             {

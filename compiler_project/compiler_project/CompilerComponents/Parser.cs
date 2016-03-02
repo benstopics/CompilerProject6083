@@ -1,4 +1,4 @@
-﻿using Compiler6083Project.ParserClasses;
+﻿using Compiler6083Project.CompilerComponents.ParserASTClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +73,8 @@ namespace Compiler6083Project.CompilerComponents
                 }
                 else if (NextTokenType == Token.Types.OPEN_BRACKET || NextTokenType == Token.Types.ASSIGN) // Assignment statement
                 {
+                    AssignmentStatement returnAssign = new AssignmentStatement();
+                    returnAssign.Destination = ParseMemoryLocation(name); // Destination is memory location; provide parsed identifier
                     // TODO: Assignment statement
                 }
                 else // Syntax error
@@ -84,14 +86,31 @@ namespace Compiler6083Project.CompilerComponents
             }
             else if (NextTokenType == Token.Types.FOR) // Loop statement
             {
-                // TODO: Loop statement
+                LoopStatement returnLoop = new LoopStatement();
+                Scanner.ConsumeKeywordToken(Token.Types.FOR);
+                Scanner.ConsumeOperatorToken(Token.Types.OPEN_PARENTHESIS);
+                string variableName = Scanner.ConsumeIdentifierToken().Text; // Variable name for assignment statement destination
+                returnLoop.Initialization = ParseAssignmentStatement(ParseMemoryLocation(variableName));
+                Scanner.ConsumeOperatorToken(Token.Types.SEMICOLON);
+                //returnLoop.AfterThought = ParseExpression()
             }
             else if (NextTokenType == Token.Types.RETURN) // Return statement
             {
-                // TODO: Return statement
+                result = new ReturnStatement();
+                Scanner.ConsumeToken(); // Skip keyword
             }
 
             return result;
+        }
+
+        private MemoryLocation ParseMemoryLocation(string variableName)
+        {
+            throw new NotImplementedException();
+        }
+
+        private AssignmentStatement ParseAssignmentStatement(MemoryLocation destination)
+        {
+            throw new NotImplementedException();
         }
 
         private List<Declaration> ParseDeclarationList()

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler6083Project.ParserClasses
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses
 {
     class VariableDeclaration : Declaration
     {
@@ -21,6 +21,12 @@ namespace Compiler6083Project.ParserClasses
                 else
                     return false;
             }
+        }
+
+        public VariableDeclaration (int lineNum, int colNum)
+            : base(lineNum, colNum)
+        {
+
         }
     }
 }

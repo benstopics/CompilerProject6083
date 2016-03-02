@@ -1,5 +1,5 @@
 ﻿using Compiler6083Project.CompilerComponents;
-using Compiler6083Project.ParserClasses;
+using Compiler6083Project.CompilerComponents.ParserASTClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;

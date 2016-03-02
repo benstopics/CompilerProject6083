@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler6083Project.ParserClasses.ExpressionObjects
+namespace Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObjects
 {
-    abstract class NumberFactor : ExpressionClass
+    class FloatFactor : NumberFactor
     {
-        public bool IsNegated { get; set; }
         public float Value { get; set; }
     }
 }
