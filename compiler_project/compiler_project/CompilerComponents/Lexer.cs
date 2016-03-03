@@ -69,7 +69,7 @@ namespace Compiler6083Project
             if (!File.Exists(filePath))
             {
                 // Custom exception
-                Console.WriteLine("File not found");
+                ErrorHandler.FileNotFoundError(filePath);
             }
             else
             {
@@ -88,7 +88,7 @@ namespace Compiler6083Project
             else
             {
                 ErrorHandler.MissingRequiredKeywordError(this, keyword);
-                throw new NotImplementedException(); // Will never reach
+                return null; // If ExitOnError is disabled
             }
         }
 
@@ -99,7 +99,7 @@ namespace Compiler6083Project
             else
             {
                 ErrorHandler.IdentifierExpected(this);
-                throw new NotImplementedException(); // Will never reach
+                return null; // If ExitOnError is disabled
             }
         }
 
@@ -109,8 +109,8 @@ namespace Compiler6083Project
                 return ConsumeToken();
             else
             {
-                ErrorHandler.SyntaxError(this, "Missing '" + op.ToString() + "' operator.");
-                throw new NotImplementedException(); // Will never reach
+                ErrorHandler.LexerError(this, "Missing '" + op.ToString() + "' operator.");
+                return null; // If ExitOnError is disabled
             }
         }
 
@@ -120,8 +120,8 @@ namespace Compiler6083Project
                 return ConsumeToken();
             else
             {
-                ErrorHandler.SyntaxError(this, "Expected typemark keyword.");
-                throw new NotImplementedException(); // Will never reach
+                ErrorHandler.LexerError(this, "Expected typemark keyword.");
+                return null; // If ExitOnError is disabled
             }
         }
 
@@ -135,14 +135,14 @@ namespace Compiler6083Project
                 }
                 catch
                 {
-                    ErrorHandler.SyntaxError(this, "Fatal error: scanner accepted characters as integer value token but token could not be casted to an integer value.");
-                    throw new NotImplementedException(); // Will never reach
+                    ErrorHandler.LexerError(this, "Fatal error: scanner accepted characters as integer value token but token could not be casted to an integer value.");
+                    return 0; // If ExitOnError is disabled
                 }
             }
             else
             {
-                ErrorHandler.SyntaxError(this, "Expected integer value.");
-                throw new NotImplementedException(); // Will never reach
+                ErrorHandler.LexerError(this, "Expected integer value.");
+                return 0; // If ExitOnError is disabled
             }
         }
 
@@ -156,14 +156,14 @@ namespace Compiler6083Project
                 }
                 catch
                 {
-                    ErrorHandler.SyntaxError(this, "Fatal error: scanner accepted characters as float value token but token could not be casted to a float value.");
-                    throw new NotImplementedException(); // Will never reach
+                    ErrorHandler.LexerError(this, "Fatal error: scanner accepted characters as float value token but token could not be casted to a float value.");
+                    return 0; // If ExitOnError is disabled
                 }
             }
             else
             {
-                ErrorHandler.SyntaxError(this, "Expected float value.");
-                throw new NotImplementedException(); // Will never reach
+                ErrorHandler.LexerError(this, "Expected float value.");
+                return 0; // If ExitOnError is disabled
             }
         }
 
@@ -217,7 +217,7 @@ namespace Compiler6083Project
                     result = Operators.DIV;
                     break;
                 default: // No operator found
-                    ErrorHandler.SyntaxError(this, "No expression operator found.");
+                    ErrorHandler.LexerError(this, "No expression operator found.");
                     break;
             }
 
@@ -230,7 +230,7 @@ namespace Compiler6083Project
         /// <returns></returns>
         public Token ConsumeToken()
         {
-            Token result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF 
+            Token result;
 
             if (LookAheadChar != '\0') // More text to read
             {
@@ -239,6 +239,8 @@ namespace Compiler6083Project
                 {
                     ConsumeChar();
                 }
+
+                result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF; store current position after consuming whitespace
 
                 if (Char.IsLetter(LookAheadChar)) // Identifier or keyword
                 {
@@ -356,7 +358,7 @@ namespace Compiler6083Project
                             result.Text += ConsumeChar(); // Append
                         else
                         {
-                            ErrorHandler.SyntaxError(this, "Non-string character found.");
+                            ErrorHandler.LexerError(this, "Non-string character found.");
                         }
                     }
                     result.Text += ConsumeChar(); // Append matching quote
@@ -388,10 +390,17 @@ namespace Compiler6083Project
                     result.Text += ConsumeChar(); // Append
                     result.Type = Token.Types.MUL;
                 }
-                else if (LookAheadChar == '/')
+                else if (LookAheadChar == '/') // Comment or DIV
                 {
                     result.Text += ConsumeChar(); // Append
-                    result.Type = Token.Types.DIV;
+                    if (LookAheadChar == '/') // Comment
+                    {
+                        while (CurrentCharacterIndex < ProgramText.Length && ConsumeChar() != '\n') ; // Ignore comment
+
+                        result = ConsumeToken(); // Pass along next valid token
+                    }
+                    else
+                        result.Type = Token.Types.DIV;
                 }
                 else if (LookAheadChar == ';')
                 {
@@ -444,7 +453,7 @@ namespace Compiler6083Project
                         result.Type = Token.Types.EQUAL;
                     }
                     else
-                        ErrorHandler.SyntaxError(this, "Invalid operator.");
+                        ErrorHandler.LexerError(this, "Invalid operator.");
                 }
                 else if (LookAheadChar == '<')
                 {
@@ -477,7 +486,7 @@ namespace Compiler6083Project
                         result.Type = Token.Types.NOT_EQUAL;
                     }
                     else
-                        ErrorHandler.SyntaxError(this, "Invalid operator.");
+                        ErrorHandler.LexerError(this, "Invalid operator.");
                 }
                 else if (LookAheadChar == ':')
                 {
@@ -492,11 +501,13 @@ namespace Compiler6083Project
                 }
                 else
                 {
-                    ErrorHandler.SyntaxError(this, "Invalid token.");
+                    ErrorHandler.LexerError(this, "Invalid token.");
                 }
             }
             else
-                result.Type = Token.Types.EOF;
+            {
+                result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF 
+            }
 
             Token oldLookahead = LookAheadToken; // Save old lookahead token
             lookaheadToken = result; // Set new lookahead token to consumed token

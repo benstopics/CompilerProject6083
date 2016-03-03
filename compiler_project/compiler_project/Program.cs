@@ -1,5 +1,6 @@
 ﻿using Compiler6083Project.CompilerComponents;
 using Compiler6083Project.CompilerComponents.ParserASTClasses;
+using Compiler6083Project.TestClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,7 @@ namespace Compiler6083Project
     {
         static void Main(string[] args)
         {
-            Parser parser = new Parser("test.src");
-            ProgramAST ast = parser.GenerateAST();
-            Console.WriteLine(ast.ProgramName);
+            TestParser.ParseFactor();
         }
     }
 }

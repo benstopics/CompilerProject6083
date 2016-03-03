@@ -37,7 +37,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private List<Statement> ParseStatementList()
+        public List<Statement> ParseStatementList()
         {
             List<Statement> statementList = new List<Statement>();
 
@@ -62,7 +62,7 @@ namespace Compiler6083Project.CompilerComponents
         /// Method used by the parser to capture a statement AST node from the Lexer token stream.
         /// </summary>
         /// <returns>Parsed statement. If statement not found, returns null.</returns>
-        private Statement ParseStatement()
+        public Statement ParseStatement()
         {
             Statement result = null;
 
@@ -96,7 +96,7 @@ namespace Compiler6083Project.CompilerComponents
                     result = ParseAssignmentStatement(ParseMemoryLocation(idToken)); // Secure result
                 }
                 else // Syntax error
-                    ErrorHandler.SyntaxError(Scanner, "Expect either '(' for procedure call or ':=' (or '[' if assigning an array element) for assignment statement.");
+                    ErrorHandler.ParserError(Scanner, "Expect either '(' for procedure call or ':=' (or '[' if assigning an array element) for assignment statement.");
             }
             else if (NextTokenType == Token.Types.IF) // If statement
             {
@@ -109,7 +109,7 @@ namespace Compiler6083Project.CompilerComponents
                 returnIf.StatementList = ParseStatementList();
                 if (returnIf.StatementList.Count < 1) // No statements found (at least one required)
                 {
-                    ErrorHandler.SyntaxError(Scanner, "If statement body must have at least one statement.");
+                    ErrorHandler.ParserError(Scanner, "If statement body must have at least one statement.");
                 }
                 else if (NextTokenType == Token.Types.ELSE) // Has else statement (optional)
                 {
@@ -117,7 +117,7 @@ namespace Compiler6083Project.CompilerComponents
                     returnIf.ElseStatementList = ParseStatementList();
                     if (returnIf.ElseStatementList.Count < 1) // No statements found (at least one required)
                     {
-                        ErrorHandler.SyntaxError(Scanner, "Else statement body must have at least one statement.");
+                        ErrorHandler.ParserError(Scanner, "Else statement body must have at least one statement.");
                     }
                     Scanner.ConsumeKeywordToken(Token.Types.END);
                     Scanner.ConsumeKeywordToken(Token.Types.IF);
@@ -150,7 +150,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private Expression ParseExpression()
+        public Expression ParseExpression()
         {
             Expression result;
 
@@ -175,7 +175,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private Expression ParseArithOp()
+        public Expression ParseArithOp()
         {
             Expression result;
 
@@ -190,7 +190,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private Expression ParseRelation()
+        public Expression ParseRelation()
         {
             Expression result;
 
@@ -210,7 +210,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private Expression ParseTerm()
+        public Expression ParseTerm()
         {
             Expression result;
 
@@ -225,7 +225,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private ExpressionClass ParseFactor()
+        public ExpressionClass ParseFactor()
         {
             ExpressionClass result;
 
@@ -310,16 +310,15 @@ namespace Compiler6083Project.CompilerComponents
                 }
                 else
                 {
-                    ErrorHandler.SyntaxError(Scanner, "Expected factor.");
-                    // Unreachable code
-                    throw new NotImplementedException();
+                    ErrorHandler.ParserError(Scanner, "Expected factor.");
+                    return null; // If ExitOnError is disabled
                 }
             }
 
             return result;
         }
 
-        private MemoryLocation ParseMemoryLocation(Token idToken)
+        public MemoryLocation ParseMemoryLocation(Token idToken)
         {
             MemoryLocation result = new MemoryLocation(idToken.CodeLineNumber, idToken.CodeColumnNumber, idToken.CodeCharacterIndex);
 
@@ -334,7 +333,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private AssignmentStatement ParseAssignmentStatement(MemoryLocation destination)
+        public AssignmentStatement ParseAssignmentStatement(MemoryLocation destination)
         {
             AssignmentStatement result = new AssignmentStatement(destination);
 
@@ -344,7 +343,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private List<Declaration> ParseDeclarationList()
+        public List<Declaration> ParseDeclarationList()
         {
             List<Declaration> decList = new List<Declaration>();
 
@@ -372,7 +371,7 @@ namespace Compiler6083Project.CompilerComponents
                     decList.Add(parsedVarDec);
                 }
                 else if (isGlobal) // Global keyword found but no declaration followed
-                    ErrorHandler.SyntaxError(Scanner, "Expected procedure or variable declaration after 'GLOBAL' keyword.");
+                    ErrorHandler.ParserError(Scanner, "Expected procedure or variable declaration after 'GLOBAL' keyword.");
 
                 Scanner.ConsumeOperatorToken(Token.Types.SEMICOLON); // Declarations delimitered by semicolon
             }
@@ -380,7 +379,7 @@ namespace Compiler6083Project.CompilerComponents
             return decList;
         }
 
-        private VariableDeclaration ParseVariableDeclaration()
+        public VariableDeclaration ParseVariableDeclaration()
         {
             VariableDeclaration result;
 
@@ -396,7 +395,7 @@ namespace Compiler6083Project.CompilerComponents
             else if (typeMarkToken.Type == Token.Types.STRING)
                 result.TypeMark = Lexer.TypeMarks.STRING;
             else
-                ErrorHandler.SyntaxError(Scanner, "Fatal error: unreachable code reached.");
+                ErrorHandler.ParserError(Scanner, "Fatal error: unreachable code reached.");
             // Name
             result.VariableName = Scanner.ConsumeIdentifierToken().Text;
             // Optional array size
@@ -407,14 +406,14 @@ namespace Compiler6083Project.CompilerComponents
                 if (arraySize > 0)
                     result.ArraySize = arraySize;
                 else
-                    ErrorHandler.SyntaxError(Scanner, "Array size must at least 1.");
+                    ErrorHandler.ParserError(Scanner, "Array size must at least 1.");
                 Scanner.ConsumeOperatorToken(Token.Types.CLOSE_BRACKET);
             }
 
             return result;
         }
 
-        private ProcedureDeclaration ParseProcedureDeclaration()
+        public ProcedureDeclaration ParseProcedureDeclaration()
         {
             ProcedureDeclaration result;
 
@@ -435,7 +434,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private List<Parameter> ParseParameterList()
+        public List<Parameter> ParseParameterList()
         {
             List<Parameter> result = new List<Parameter>();
 
@@ -452,7 +451,7 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private Parameter ParseParameter()
+        public Parameter ParseParameter()
         {
             Parameter result;
 
@@ -464,9 +463,8 @@ namespace Compiler6083Project.CompilerComponents
                 argType = Parameter.ArgType.OUT; // OUT keyword found
             if (argType == Parameter.ArgType.ERROR) // Syntax error: parameter type not found
             {
-                ErrorHandler.SyntaxError(Scanner, "Expected 'IN' or 'OUT'.");
-                // Unreachable code
-                throw new NotImplementedException();
+                ErrorHandler.ParserError(Scanner, "Expected 'IN' or 'OUT'.");
+                return null; // If ExitOnError is disabled
             }
             else // Parameter type found
             {

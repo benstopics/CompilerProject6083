@@ -9,3 +9,5 @@ C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\b
 C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\compiler_project.exe
 C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\compiler_project.pdb
 C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\obj\Debug\CompilerProject.csprojResolveAssemblyReference.cache
+C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.exe
+C:\Users\ben\Documents\GitHub\compilers-6083\compiler_project\compiler_project\bin\Debug\compiler_project.pdb
