@@ -130,7 +130,15 @@ namespace Compiler6083Project
         {
             if (LookAheadToken.Type == Token.Types.INT_VALUE)
             {
-                return Convert.ToInt32(ConsumeToken().Text);
+                try
+                {
+                    return Convert.ToInt32(ConsumeToken().Text);
+                }
+                catch
+                {
+                    ErrorHandler.SyntaxError(this, "Fatal error: scanner accepted characters as integer value token but token could not be casted to an integer value.");
+                    throw new NotImplementedException(); // Will never reach
+                }
             }
             else
             {
@@ -361,7 +369,8 @@ namespace Compiler6083Project
                     else
                         ErrorHandler.SyntaxError(this, "Invalid operator.");
                 }
-                else if (LookAheadChar == '<') {
+                else if (LookAheadChar == '<')
+                {
                     result.Text += ConsumeChar(); // Append
                     if (LookAheadChar == '=')
                     {
@@ -371,7 +380,8 @@ namespace Compiler6083Project
                     else
                         result.Type = Token.Types.LESSTHAN;
                 }
-                else if (LookAheadChar == '>') {
+                else if (LookAheadChar == '>')
+                {
                     result.Text += ConsumeChar(); // Append
                     if (LookAheadChar == '=')
                     {
@@ -381,7 +391,8 @@ namespace Compiler6083Project
                     else
                         result.Type = Token.Types.GREATERTHAN;
                 }
-                else if (LookAheadChar == '!') {
+                else if (LookAheadChar == '!')
+                {
                     result.Text += ConsumeChar(); // Append
                     if (LookAheadChar == '=')
                     {

@@ -1,4 +1,5 @@
 ﻿using Compiler6083Project.CompilerComponents.ParserASTClasses;
+using Compiler6083Project.CompilerComponents.ParserASTClasses.ExpressionObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,6 +152,95 @@ namespace Compiler6083Project.CompilerComponents
 
         private ExpressionClass ParseExpression()
         {
+            ExpressionClass result;
+
+            if (NextTokenType == Token.Types.NOT) // Expression
+            {
+                Token notToken = Scanner.ConsumeKeywordToken(Token.Types.NOT);
+                Expression returnExpr = new Expression(notToken.CodeLineNumber, notToken.CodeColumnNumber, notToken.CodeCharacterIndex);
+                returnExpr.Operator = Lexer.Operators.NOT;
+                returnExpr.OperandA = ParseFactor();
+
+                result = returnExpr;
+            }
+            else // Factor
+            {
+                result = ParseFactor();
+            }
+
+            return result;
+        }
+
+        private ExpressionClass ParseFactor()
+        {
+            ExpressionClass result;
+
+            if (NextTokenType == Token.Types.OPEN_PARENTHESIS) // Expression in parentheses
+            {
+                Scanner.ConsumeOperatorToken(Token.Types.OPEN_PARENTHESIS);
+                result = ParseExpression();
+                Scanner.ConsumeOperatorToken(Token.Types.CLOSE_PARENTHESIS);
+            }
+            else if (NextTokenType == Token.Types.STRING_VALUE) // String value
+            {
+                Token strToken = Scanner.ConsumeToken();
+                StringFactor returnStrFactor = new StringFactor(strToken.CodeLineNumber, strToken.CodeColumnNumber, strToken.CodeCharacterIndex);
+                returnStrFactor.Value = strToken.Text;
+
+                result = returnStrFactor;
+            }
+            else if (NextTokenType == Token.Types.TRUE) // True bool value
+            {
+                Token trueToken = Scanner.ConsumeKeywordToken(Token.Types.TRUE);
+                BoolFactor returnBoolFactor = new BoolFactor(trueToken.CodeLineNumber, trueToken.CodeColumnNumber, trueToken.CodeCharacterIndex);
+                returnBoolFactor.Value = true;
+
+                result = returnBoolFactor;
+            }
+            else if (NextTokenType == Token.Types.FALSE) // False bool value
+            {
+                Token falseToken = Scanner.ConsumeKeywordToken(Token.Types.FALSE);
+                BoolFactor returnBoolFactor = new BoolFactor(falseToken.CodeLineNumber, falseToken.CodeColumnNumber, falseToken.CodeCharacterIndex);
+                returnBoolFactor.Value = false;
+
+                result = returnBoolFactor;
+            }
+            else
+            {
+                Token negToken = null;
+                if (NextTokenType == Token.Types.SUB) // Negated variable factor or number factor
+                {
+                    negToken = Scanner.ConsumeKeywordToken(Token.Types.SUB);
+                }
+
+                Token initToken = null;
+                if (NextTokenType == Token.Types.IDENTIFIER) // Variable factor
+                {
+                    Token idToken = Scanner.ConsumeIdentifierToken();
+                    if (negToken != null)
+                        initToken = negToken; // Negated, minus symbol initial token
+                    else
+                        initToken = idToken; // Not negated, identifier initial token
+
+                    VariableFactor returnVarFactor = new VariableFactor(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
+                    returnVarFactor.IsNegated = negToken != null ? true : false;
+                    returnVarFactor.Location = ParseMemoryLocation(idToken);
+
+                    result = returnVarFactor;
+                }
+                else if (NextTokenType == Token.Types.INT_VALUE) // Integer number factor
+                {
+
+                }
+                else if (NextTokenType == Token.Types.FLOAT_VALUE) // Integer number factor
+                {
+
+                }
+                else {
+
+                }
+            }
+
             throw new NotImplementedException();
         }
 
@@ -159,7 +249,12 @@ namespace Compiler6083Project.CompilerComponents
             MemoryLocation result = new MemoryLocation(idToken.CodeLineNumber, idToken.CodeColumnNumber, idToken.CodeCharacterIndex);
 
             result.VariableName = idToken.Text;
-            // TODO: Memory location
+            if (NextTokenType == Token.Types.OPEN_BRACKET) // Array index specified
+            {
+                Scanner.ConsumeOperatorToken(Token.Types.OPEN_BRACKET);
+                result.ArrayIndexExpression = ParseExpression(); // Array index expression
+                Scanner.ConsumeOperatorToken(Token.Types.CLOSE_BRACKET);
+            }
 
             return result;
         }
@@ -168,7 +263,8 @@ namespace Compiler6083Project.CompilerComponents
         {
             AssignmentStatement result = new AssignmentStatement(destination);
 
-
+            Scanner.ConsumeOperatorToken(Token.Types.ASSIGN);
+            result.Expression = ParseExpression();
 
             return result;
         }

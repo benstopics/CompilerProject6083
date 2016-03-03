@@ -8,18 +8,19 @@ namespace Compiler6083Project.CompilerComponents.ParserASTClasses
     class MemoryLocation : ParserASTNode
     {
         public string VariableName { get; set; }
-        private int arrayIndex = -1; // Not array by default
-        public int ArrayIndex { get { return arrayIndex; } set { arrayIndex = value; } }
-        public bool IsArrayElement
+        private ExpressionClass arrayIndexExpr = null;
+        public ExpressionClass ArrayIndexExpression
         {
             get
             {
-                if (arrayIndex >= 0)
-                    return true;
-                else
-                    return false;
+                return arrayIndexExpr;
+            }
+            set
+            {
+                arrayIndexExpr = value;
             }
         }
+        public bool IsArrayLocation { get { return ArrayIndexExpression != null; } }
 
         public MemoryLocation(int lineNum, int colNum, int charIndex)
             : base(lineNum, colNum, charIndex)
