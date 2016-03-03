@@ -150,22 +150,76 @@ namespace Compiler6083Project.CompilerComponents
             return result;
         }
 
-        private ExpressionClass ParseExpression()
+        private Expression ParseExpression()
         {
-            ExpressionClass result;
+            Expression result;
 
-            if (NextTokenType == Token.Types.NOT) // Expression
+            if (NextTokenType == Token.Types.NOT) // Negated
             {
                 Token notToken = Scanner.ConsumeKeywordToken(Token.Types.NOT);
-                Expression returnExpr = new Expression(notToken.CodeLineNumber, notToken.CodeColumnNumber, notToken.CodeCharacterIndex);
-                returnExpr.Operator = Lexer.Operators.NOT;
-                returnExpr.OperandA = ParseFactor();
-
-                result = returnExpr;
+                result = new Expression(notToken.CodeLineNumber, notToken.CodeColumnNumber, notToken.CodeCharacterIndex);
+                result.Operator = Lexer.Operators.NOT;
+                result.OperandA = ParseArithOp();
             }
-            else // Factor
+            else // Not negated
             {
-                result = ParseFactor();
+                ExpressionClass operandA = ParseArithOp();
+                result = new Expression(operandA.CodeLineNumber, operandA.CodeColumnNumber, operandA.CodeCharacterIndex);
+                if (NextTokenType == Token.Types.AND || NextTokenType == Token.Types.OR) // Second operand
+                {
+                    result.Operator = Scanner.ConsumeExpressionOperator();
+                    ExpressionClass operandB = ParseArithOp();
+                }
+            }
+
+            return result;
+        }
+
+        private Expression ParseArithOp()
+        {
+            Expression result;
+
+            ExpressionClass operandA = ParseRelation();
+            result = new Expression(operandA.CodeLineNumber, operandA.CodeColumnNumber, operandA.CodeCharacterIndex);
+            if (NextTokenType == Token.Types.ADD || NextTokenType == Token.Types.SUB) // Second operand
+            {
+                result.Operator = Scanner.ConsumeExpressionOperator();
+                ExpressionClass operandB = ParseRelation();
+            }
+
+            return result;
+        }
+
+        private Expression ParseRelation()
+        {
+            Expression result;
+
+            ExpressionClass operandA = ParseTerm();
+            result = new Expression(operandA.CodeLineNumber, operandA.CodeColumnNumber, operandA.CodeCharacterIndex);
+            if (NextTokenType == Token.Types.LESSTHAN ||
+                NextTokenType == Token.Types.LESSTHAN_EQUAL ||
+                NextTokenType == Token.Types.GREATERTHAN ||
+                NextTokenType == Token.Types.GREATERTHAN_EQUAL ||
+                NextTokenType == Token.Types.EQUAL ||
+                NextTokenType == Token.Types.NOT_EQUAL) // Second operand
+            {
+                result.Operator = Scanner.ConsumeExpressionOperator();
+                ExpressionClass operandB = ParseTerm();
+            }
+
+            return result;
+        }
+
+        private Expression ParseTerm()
+        {
+            Expression result;
+
+            ExpressionClass operandA = ParseFactor();
+            result = new Expression(operandA.CodeLineNumber, operandA.CodeColumnNumber, operandA.CodeCharacterIndex);
+            if (NextTokenType == Token.Types.MUL || NextTokenType == Token.Types.DIV) // Second operand
+            {
+                result.Operator = Scanner.ConsumeExpressionOperator();
+                ExpressionClass operandB = ParseFactor();
             }
 
             return result;
@@ -230,18 +284,39 @@ namespace Compiler6083Project.CompilerComponents
                 }
                 else if (NextTokenType == Token.Types.INT_VALUE) // Integer number factor
                 {
+                    if (negToken != null)
+                        initToken = negToken; // Negated, minus symbol initial token
+                    else
+                        initToken = Scanner.LookAheadToken; // Not negated, identifier initial token
 
+                    IntegerFactor returnIntFactor = new IntegerFactor(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
+                    returnIntFactor.Value = Scanner.ConsumeInt();
+                    returnIntFactor.IsNegated = negToken != null ? true : false;
+
+                    result = returnIntFactor;
                 }
-                else if (NextTokenType == Token.Types.FLOAT_VALUE) // Integer number factor
+                else if (NextTokenType == Token.Types.FLOAT_VALUE) // Float number factor
                 {
+                    if (negToken != null)
+                        initToken = negToken; // Negated, minus symbol initial token
+                    else
+                        initToken = Scanner.LookAheadToken; // Not negated, identifier initial token
 
+                    FloatFactor returnFloatFactor = new FloatFactor(initToken.CodeLineNumber, initToken.CodeColumnNumber, initToken.CodeCharacterIndex);
+                    returnFloatFactor.Value = Scanner.ConsumeFloat();
+                    returnFloatFactor.IsNegated = negToken != null ? true : false;
+
+                    result = returnFloatFactor;
                 }
-                else {
-
+                else
+                {
+                    ErrorHandler.SyntaxError(Scanner, "Expected factor.");
+                    // Unreachable code
+                    throw new NotImplementedException();
                 }
             }
 
-            throw new NotImplementedException();
+            return result;
         }
 
         private MemoryLocation ParseMemoryLocation(Token idToken)

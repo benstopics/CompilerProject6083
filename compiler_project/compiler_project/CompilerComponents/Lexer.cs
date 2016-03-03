@@ -12,9 +12,8 @@ namespace Compiler6083Project
     {
         public enum Operators
         {
-            AND, OR, NOT, ADD, SUB, MUL, DIV, LESSTHAN_EQUAL, LESSTHAN, GREATERTHAN_EQUAL,
-            GREATERTHAN, EQUAL, ASSIGN, NOT_EQUAL,
-            NONE
+            AND, OR, NOT, ADD, SUB, LESSTHAN, LESSTHAN_EQUAL, GREATERTHAN_EQUAL,
+            GREATERTHAN, EQUAL, NOT_EQUAL, MUL, DIV, NONE
         }
 
         public enum TypeMarks
@@ -145,6 +144,84 @@ namespace Compiler6083Project
                 ErrorHandler.SyntaxError(this, "Expected integer value.");
                 throw new NotImplementedException(); // Will never reach
             }
+        }
+
+        public float ConsumeFloat()
+        {
+            if (LookAheadToken.Type == Token.Types.FLOAT_VALUE)
+            {
+                try
+                {
+                    return (float)Convert.ToDouble(ConsumeToken().Text);
+                }
+                catch
+                {
+                    ErrorHandler.SyntaxError(this, "Fatal error: scanner accepted characters as float value token but token could not be casted to a float value.");
+                    throw new NotImplementedException(); // Will never reach
+                }
+            }
+            else
+            {
+                ErrorHandler.SyntaxError(this, "Expected float value.");
+                throw new NotImplementedException(); // Will never reach
+            }
+        }
+
+        /// <summary>
+        /// Returns an expression operator if it is the next token.
+        /// </summary>
+        /// <returns>An expression operator if it is the next token, if not, returns operator NONE.</returns>
+        public Operators ConsumeExpressionOperator()
+        {
+            Operators result = Operators.NONE; // Assume no expression operator found
+
+            switch (LookAheadToken.Type)
+            {
+                case Token.Types.AND:
+                    result = Operators.AND;
+                    break;
+                case Token.Types.OR:
+                    result = Operators.OR;
+                    break;
+                case Token.Types.NOT:
+                    result = Operators.NOT;
+                    break;
+                case Token.Types.ADD:
+                    result = Operators.ADD;
+                    break;
+                case Token.Types.SUB:
+                    result = Operators.SUB;
+                    break;
+                case Token.Types.LESSTHAN:
+                    result = Operators.LESSTHAN;
+                    break;
+                case Token.Types.LESSTHAN_EQUAL:
+                    result = Operators.LESSTHAN_EQUAL;
+                    break;
+                case Token.Types.GREATERTHAN_EQUAL:
+                    result = Operators.GREATERTHAN_EQUAL;
+                    break;
+                case Token.Types.GREATERTHAN:
+                    result = Operators.GREATERTHAN;
+                    break;
+                case Token.Types.EQUAL:
+                    result = Operators.EQUAL;
+                    break;
+                case Token.Types.NOT_EQUAL:
+                    result = Operators.NOT_EQUAL;
+                    break;
+                case Token.Types.MUL:
+                    result = Operators.MUL;
+                    break;
+                case Token.Types.DIV:
+                    result = Operators.DIV;
+                    break;
+                default: // No operator found
+                    ErrorHandler.SyntaxError(this, "No expression operator found.");
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>
