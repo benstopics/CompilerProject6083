@@ -8,17 +8,46 @@ using System.Threading.Tasks;
 
 namespace Compiler6083Project.TestClasses
 {
-    class TestParser
+    class ParserTester : CompilerTester
     {
         public static void ParseFactor()
         {
             ErrorHandler.ExitOnError = false; // Disable exit on error
 
-            Parser parser = new Parser(@"testsrcs\parser\parsefactor.src"); // Load test source code
+            string[] testCodeCases = LoadTestCodeCases(@"testsrcs\parser\parsefactor-success.src");
 
-            while (parser.NextTokenType != Token.Types.EOF)
+            for (int i = 0; i < testCodeCases.Length; i++)
             {
+                Console.WriteLine("Success Test Case #" + (i + 1) + ":");
+
+                // Load test case
+                Parser parser = new Parser();
+                Lexer lex = new Lexer();
+                lex.ProgramText = testCodeCases[i];
+                parser.Scanner = lex;
+
+                // Perform test
                 parser.ParseFactor();
+
+                Console.WriteLine();
+            }
+
+            testCodeCases = LoadTestCodeCases(@"testsrcs\parser\parsefactor-fail.src");
+
+            for (int i = 0; i < testCodeCases.Length; i++)
+            {
+                Console.WriteLine("Fail Test Case #" + (i + 1) + ":");
+
+                // Load test case
+                Parser parser = new Parser();
+                Lexer lex = new Lexer();
+                lex.ProgramText = testCodeCases[i];
+                parser.Scanner = lex;
+
+                // Perform test
+                parser.ParseFactor();
+
+                Console.WriteLine();
             }
         }
     }

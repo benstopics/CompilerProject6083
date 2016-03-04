@@ -35,7 +35,17 @@ namespace Compiler6083Project
         private int colNum = 1; // Start on first column
         public int CurrentLineNumber { get { return lineNum; } }
         public int CurrentColumnNumber { get { return colNum; } }
-        public string ProgramText { get; set; }
+        private string programText = "";
+        public string ProgramText
+        {
+            get { return programText; }
+            set
+            {
+                programText = value;
+                CurrentCharacterIndex = 0;
+                ConsumeToken(); // Load first token into lookahead
+            }
+        }
         public int CurrentCharacterIndex { get; set; }
         public char LookAheadChar
         {
@@ -59,12 +69,25 @@ namespace Compiler6083Project
         }
 
         /// <summary>
+        /// Debug constructor
+        /// </summary>
+        public Lexer()
+        {
+            
+        }
+
+        /// <summary>
         /// Also known as a scanner, the lexer is used to capture valid tokens in the program text sequentially.
         /// </summary>
         /// <param name="filePath">The file path of the program text file to open for reading.</param>
         public Lexer(string filePath)
         {
-            CurrentCharacterIndex = 0;
+            ProgramText = GetFileText(filePath);
+        }
+
+        public static string GetFileText(string filePath)
+        {
+            string result = "";
 
             if (!File.Exists(filePath))
             {
@@ -74,9 +97,10 @@ namespace Compiler6083Project
             else
             {
                 // Read all lines, then join back to single string. Removes \r's
-                ProgramText = string.Join("\n", System.IO.File.ReadAllLines(filePath));
-                ConsumeToken(); // Load first token into lookahead
+                result = string.Join("\n", System.IO.File.ReadAllLines(filePath));
             }
+
+            return result;
         }
 
         public Token ConsumeKeywordToken(Token.Types keyword)
@@ -232,14 +256,14 @@ namespace Compiler6083Project
         {
             Token result;
 
+            // Consume whitespace before doing anything
+            while (LookAheadChar == '\n' || LookAheadChar == ' ')
+            {
+                ConsumeChar();
+            }
+
             if (LookAheadChar != '\0') // More text to read
             {
-                // Consume whitespace
-                while (LookAheadChar == '\n' || LookAheadChar == ' ')
-                {
-                    ConsumeChar();
-                }
-
                 result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF; store current position after consuming whitespace
 
                 if (Char.IsLetter(LookAheadChar)) // Identifier or keyword
@@ -397,7 +421,7 @@ namespace Compiler6083Project
                     {
                         while (CurrentCharacterIndex < ProgramText.Length && ConsumeChar() != '\n') ; // Ignore comment
 
-                        result = ConsumeToken(); // Pass along next valid token
+                        return ConsumeToken(); // Pass along next valid token
                     }
                     else
                         result.Type = Token.Types.DIV;
@@ -506,7 +530,7 @@ namespace Compiler6083Project
             }
             else
             {
-                result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF 
+                result = new Token(CurrentLineNumber, CurrentColumnNumber, CurrentCharacterIndex, "", Token.Types.EOF); // Assume EOF
             }
 
             Token oldLookahead = LookAheadToken; // Save old lookahead token

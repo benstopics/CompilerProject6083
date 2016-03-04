@@ -1,5 +1,0 @@
-test [1]
-- // Invalid factor
-- test
-"testing string factor"
-- "test string factor" // String factor cannot be negated

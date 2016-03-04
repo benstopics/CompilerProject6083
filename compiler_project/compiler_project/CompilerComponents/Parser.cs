@@ -14,6 +14,14 @@ namespace Compiler6083Project.CompilerComponents
         public string NextTokenText { get { return Scanner.LookAheadToken.Text; } }
         public Token.Types NextTokenType { get { return Scanner.LookAheadToken.Type; } }
 
+        /// <summary>
+        /// Debug constructor
+        /// </summary>
+        public Parser()
+        {
+
+        }
+
         public Parser(string filePath)
         {
             Scanner = new Lexer(filePath);
@@ -227,7 +235,7 @@ namespace Compiler6083Project.CompilerComponents
 
         public ExpressionClass ParseFactor()
         {
-            ExpressionClass result;
+            ExpressionClass result = null;
 
             if (NextTokenType == Token.Types.OPEN_PARENTHESIS) // Expression in parentheses
             {
@@ -264,7 +272,7 @@ namespace Compiler6083Project.CompilerComponents
                 Token negToken = null;
                 if (NextTokenType == Token.Types.SUB) // Negated variable factor or number factor
                 {
-                    negToken = Scanner.ConsumeKeywordToken(Token.Types.SUB);
+                    negToken = Scanner.ConsumeOperatorToken(Token.Types.SUB);
                 }
 
                 Token initToken = null;
@@ -308,10 +316,21 @@ namespace Compiler6083Project.CompilerComponents
 
                     result = returnFloatFactor;
                 }
-                else
+                else if (NextTokenType == Token.Types.STRING_VALUE) // Negate string error
                 {
-                    ErrorHandler.ParserError(Scanner, "Expected factor.");
-                    return null; // If ExitOnError is disabled
+                    ErrorHandler.ParserError(Scanner, "Cannot negate string.");
+                }
+                else if (NextTokenType == Token.Types.TRUE || NextTokenType == Token.Types.FALSE) // Negate bool error
+                {
+                    ErrorHandler.ParserError(Scanner, "Cannot negate boolean.");
+                }
+                else if (negToken != null) // Needed to find variable or number factor to negate
+                {
+                    ErrorHandler.ParserError(Scanner, "Expected variable or number factor.");
+                }
+                else // Could not find factor
+                {
+                    ErrorHandler.ParserError(Scanner, "Expected string, boolean, number, or variable factor.");
                 }
             }
 

@@ -1,0 +1,4 @@
+Test Case: - "testing string factor" // Cannot negate string
+Test Case: - true // Or bool
+Test Case: - false
+Test Case: for // No factor error

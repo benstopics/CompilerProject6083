@@ -13,7 +13,7 @@ namespace Compiler6083Project
     {
         static void Main(string[] args)
         {
-            TestParser.ParseFactor();
+            ParserTester.ParseFactor();
         }
     }
 }
